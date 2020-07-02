@@ -24,6 +24,7 @@ library(reactable)
 library(shinydashboard)
 library(plotly)
 library(shinyWidgets)
+library(extrafont)
 
 # # style file
 # styles <- readLines('https://raw.githubusercontent.com/tbep-tech/css-styling/master/styles.css')
@@ -31,6 +32,7 @@ library(shinyWidgets)
 
 data(tbniscr)
 
+fml <- 'Lato Light'
 maxyr <- 2019
 perc <- c(32, 46)
 cols <- c('red', 'yellow', 'green')
@@ -96,7 +98,7 @@ attmap <- reactive({
       weight = 1,
       fillOpacity = 1,
       radius= 4,#~scales::rescale(val, from = scls, to = c(5, 20)),
-      label = ~paste0('Station ', Reference, ' (TBNI: ,', round(TBNI_Score, 1), ', action: ', action)
+      label = ~paste0('Station ', Reference, ' (TBNI: ', round(TBNI_Score, 1), ', action: ', action)
     ) %>% 
     addLegend("topright", labels = c("Stay the Course", "Caution", "On Alert"), colors = rev(cols), title = "Bay segment/site <br>matrix outcomes", opacity = 1)
   
