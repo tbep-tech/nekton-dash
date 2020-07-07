@@ -31,6 +31,14 @@ library(extrafont)
 # writeLines(styles, 'styles.css')
 
 data(tbniscr)
+data(tbnimat)
+
+# fimstations, clip by segment extents, get year column
+fimstations <- fimstations[tbseg, ] %>% 
+  mutate(
+    yr = gsub('^TBM([0-9]{4})[0-9]+$', '\\1', Reference), 
+    yr = as.numeric(yr)
+  )
 
 fml <- 'Lato Light'
 maxyr <- 2019
@@ -46,10 +54,10 @@ tbniyrs <- tbniscr %>%
   spread(var, val) %>% 
   ungroup %>% 
   mutate(
-    action = findInterval(TBNI_Score, perc),
-    outcome = factor(action, levels = c('0', '1', '2'), labels = c('red', 'yellow', 'green')),
+    Action = findInterval(TBNI_Score, perc),
+    outcome = factor(Action, levels = c('0', '1', '2'), labels = c('red', 'yellow', 'green')),
     outcome = as.character(outcome),
-    action = factor(action, levels = c('0', '1', '2'), labels = c('On Alert', 'Caution', 'Stay the Course'))
+    Action = factor(Action, levels = c('0', '1', '2'), labels = c('On Alert', 'Caution', 'Stay the Course'))
   )
 
 avedat <- anlz_tbniave(tbniscr) 
@@ -60,17 +68,17 @@ avedat <- anlz_tbniave(tbniscr)
 attmap <- reactive({
   
   # inputs
-  yrsel <- input$yrsel
+  yrsel1 <- input$yrsel1
 
   # site scores
   toplo <- tbniyrs %>% 
-    filter(Year %in% yrsel) %>% 
-    select(Reference, TBNI_Score, action, outcome) %>% 
+    filter(Year %in% yrsel1) %>% 
+    select(Reference, TBNI_Score, Action, outcome) %>% 
     right_join(fimstations, ., by = 'Reference')
   
   # segment averages
   attyr <- avedat %>% 
-    filter(Year %in% yrsel) %>% 
+    filter(Year %in% yrsel1) %>% 
     left_join(tbseg, ., by = 'bay_segment') 
 
   # map with custom legends
@@ -86,7 +94,7 @@ attmap <- reactive({
       layerId = ~long_name, 
       fillColor = ~outcome, 
       fillOpacity = 0.3,
-      label = ~paste0(bay_segment, ': ', long_name, ', Action: ', action, ' (', outcome, ')')
+      label = ~paste0(bay_segment, ': ', long_name, ', Action: ', Action, ' (', outcome, ')')
     ) %>% 
     addCircleMarkers(
       data = toplo, 
@@ -98,15 +106,95 @@ attmap <- reactive({
       weight = 1,
       fillOpacity = 1,
       radius= 4,#~scales::rescale(val, from = scls, to = c(5, 20)),
-      label = ~paste0('Station ', Reference, ' (TBNI: ', round(TBNI_Score, 1), ', action: ', action)
+      label = ~paste0('Station ', Reference, ' (TBNI: ', round(TBNI_Score, 1), ', action: ', Action)
     ) %>% 
     addLegend("topright", labels = c("Stay the Course", "Caution", "On Alert"), colors = rev(cols), title = "Bay segment/site <br>matrix outcomes", opacity = 1)
+  
+})
+
+# select fim years on station selection plot
+fimyrs <- reactive({
+  
+  # input
+  yrsel2 <- input$yrsel2
+  
+  # filter by year to map
+  out <- fimstations %>% 
+    filter(yr >= yrsel2[1] & yr <= yrsel2[2])
+  
+  return(out)
   
 })
 ```
 
 ```{r map}
+# site selection map
+output$map <- renderLeaflet({
+  
+  # input
+  fimyrs <- fimyrs()
+  
+  # map with custom legends
+  mapview(fimyrs, fill = F, homebutton = F, popup = NULL, legend = F) %>% 
+    .@map %>% 
+    clearMarkers() %>%
+    leafem::removeMouseCoordinates() %>%
+    addCircleMarkers(
+      data = fimyrs, 
+      layerId = ~Reference,
+      color = '#00806E',
+      stroke = F,
+      fillOpacity = 0.5,
+      radius = 7, 
+      label = ~Reference
+    )
+  
+})
 
+# leaflet proxy for marker select
+map <- leafletProxy('map')
+
+# binding for marker select and year
+makeReactiveBinding('selsit')
+
+# the selection
+observeEvent(input$map_marker_click, {
+  selsit <<- input$map_marker_click$id
+})
+
+observeEvent(input$map_marker_click, {
+
+  # inputs
+  fimyrs <- fimyrs()
+  
+  # filter the pour points by selection
+  selsitplo <- fimyrs %>%
+    filter(Reference %in% selsit)
+
+  # clear markers on input select, add all points and selected point
+  map <- map %>%
+    clearMarkers() %>%
+    leafem::removeMouseCoordinates() %>%
+    addCircleMarkers(
+      data = selsitplo,
+      layerId = ~Reference,
+      stroke = F,
+      color = '#5C4A42',
+      fill = T,
+      radius = 14,
+      fillOpacity = 0.9
+    ) %>%
+    addCircleMarkers(
+      data = fimyrs,
+      layerId = ~Reference,
+      color = '#00806E',
+      stroke = F,
+      fillOpacity = 0.5,
+      radius = 7, 
+      label = ~Reference
+    )
+
+})
 ```
 
 ```{r downloadhandlers}
@@ -149,6 +237,10 @@ Column {.tabset .tabset-fade data-width=275}
 
 ### MATRIX RESULTS
 
+```{r}
+tbnimat
+```
+
 ### Using this tab
 
 Column {data-width=500}
@@ -161,7 +253,7 @@ output$attmap <- renderLeaflet({attmap()})
 fillCol(flex = c(NA, 1),
   column(12,
     column(6,
-      sliderInput('yrsel', 'Select year:', min = 1998, max = maxyr, value = maxyr, step = 1, sep = '', width = '200%', animate = T),
+      sliderInput('yrsel1', 'Select year:', min = 1998, max = maxyr, value = maxyr, step = 1, sep = '', width = '200%', animate = T),
     )
   ),
   leafletOutput('attmap')
@@ -176,10 +268,24 @@ Column {.tabset .tabset-fade data-width=275}
 
 ### MAP SELECTION
 
-### Using this tab
+```{r}
+leafletOutput('map')
+```
 
+### Using this tab
 
 Column {data-width=500}
 -----------------------------------------------------------------------
 
 ### PLOT
+
+```{r}
+fillCol(flex = c(NA, 1),
+  column(12,
+    column(6,
+      sliderInput('yrsel2', 'Select year range on map:', min = 1998, max = maxyr, value = c(1998, maxyr), step = 1, sep = '', width = '200%')
+    )
+  )
+)
+```
+
