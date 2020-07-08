@@ -33,19 +33,14 @@ library(extrafont)
 source('R/funcs.R')
 
 data(tbniscr)
-data(tbnimat)
-
-# fimstations, clip by segment extents, get year column
-fimstations <- fimstations[tbseg, ] %>% 
-  mutate(
-    yr = gsub('^TBM([0-9]{4})[0-9]+$', '\\1', Reference), 
-    yr = as.numeric(yr)
-  )
 
 fml <- 'Lato Light'
 maxyr <- 2019
 perc <- c(32, 46)
 cols <- c('red', 'yellow', 'green')
+
+# base matrix
+tbnimat <- show_tbnimatrix(tbniscr, family = fml, txtsz = NULL) 
 
 # annually averaged data
 tbniyrs <- tbniscr %>%
@@ -55,6 +50,17 @@ tbniyrs <- tbniscr %>%
   summarise(val = mean(val, na.rm = T)) %>% 
   spread(var, val) %>% 
   ungroup %>% 
+  mutate(
+    Action = findInterval(TBNI_Score, perc),
+    outcome = factor(Action, levels = c('0', '1', '2'), labels = c('red', 'yellow', 'green')),
+    outcome = as.character(outcome),
+    Action = factor(Action, levels = c('0', '1', '2'), labels = c('On Alert', 'Caution', 'Stay the Course'))
+  )
+
+# fimstations, clip by segment extents
+tbnistations <- fimstations[tbseg, ] %>% 
+  left_join(tbniscr, by = 'Reference') %>% 
+  select(Reference, Year, Month, TBNI_Score) %>% 
   mutate(
     Action = findInterval(TBNI_Score, perc),
     outcome = factor(Action, levels = c('0', '1', '2'), labels = c('red', 'yellow', 'green')),
@@ -114,6 +120,27 @@ attmap <- reactive({
   
 })
 
+# site attainment matrix
+attmat <- reactive({
+  
+  # input
+  yrsel1 <- input$yrsel1
+
+  lwid <- 1.5
+  
+  # base matrix with selected year
+  p <- tbnimat +
+    geom_hline(yintercept = yrsel1 - 0.5, lwd = lwid) + 
+    geom_hline(yintercept = yrsel1 + 0.5, lwd = lwid) + 
+    geom_segment(aes(x = 0.5, xend = 0.5, y = yrsel1 - 0.5, yend = yrsel1 + 0.5, lwd = lwid)) +
+    geom_segment(aes(x = 4.5, xend = 4.5, y = yrsel1 - 0.5, yend = yrsel1 + 0.5, lwd = lwid))
+  
+  out <- show_matrixplotly(p, tooltip = 'Action')
+  
+  return(out)
+
+})
+
 # select fim years on station selection plot
 fimyrs <- reactive({
   
@@ -121,8 +148,8 @@ fimyrs <- reactive({
   yrsel2 <- input$yrsel2
   
   # filter by year to map
-  out <- fimstations %>% 
-    filter(yr >= yrsel2[1] & yr <= yrsel2[2])
+  out <- tbnistations %>% 
+    filter(Year >= yrsel2[1] & Year <= yrsel2[2])
   
   return(out)
   
@@ -317,11 +344,11 @@ output$map <- renderLeaflet({
     addCircleMarkers(
       data = fimyrs, 
       layerId = ~Reference,
-      color = '#00806E',
       stroke = F,
       fillOpacity = 0.5,
       radius = 7, 
-      label = ~Reference
+      fillColor = ~outcome,
+      label = ~paste0('Station ', Reference, ' (TBNI: ', round(TBNI_Score, 1), ', action: ', Action)
     )
   
 })
@@ -352,11 +379,11 @@ observeEvent(input$map_marker_click, {
     addCircleMarkers(
       data = fimyrs,
       layerId = ~Reference,
-      color = '#00806E',
       stroke = F,
       fillOpacity = 0.5,
       radius = 7, 
-      label = ~Reference
+      fillColor = ~outcome,
+      label = ~paste0('Station ', Reference, ' (TBNI: ', round(TBNI_Score, 1), ', action: ', Action)
     ) %>%    
     addCircleMarkers(
       data = selsitplo,
@@ -413,7 +440,8 @@ Column {.tabset .tabset-fade data-width=275}
 ### MATRIX RESULTS
 
 ```{r}
-tbnimat
+output$attmat <- renderPlotly(attmat())
+plotlyOutput('attmat')
 ```
 
 ### Using this tab
@@ -466,7 +494,6 @@ output$bentrgauge <- renderGauge(bentrgauge())
 output$seltrgauge <- renderGauge(seltrgauge())
 output$guilrgauge <- renderGauge(guilrgauge())
 output$shanrgauge <- renderGauge(shanrgauge())
-
 
 fillCol(flex = c(NA, NA, 1, NA, 1, NA, 1),
   column(12,
