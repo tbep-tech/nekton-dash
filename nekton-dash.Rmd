@@ -39,6 +39,9 @@ maxyr <- 2019
 perc <- c(32, 46)
 cols <- c('red', 'yellow', 'green')
 
+# for shiny server
+st_crs(fimstations) <- 4326
+
 # base matrix
 tbnimat <- show_tbnimatrix(tbniscr, family = fml, txtsz = NULL) 
 
