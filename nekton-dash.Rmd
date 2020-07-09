@@ -162,7 +162,7 @@ timplo <- reactive({
     add_segments(x = yrsel1, xend = yrsel1, y = 0, yend = 100, line = list(color = 'red'), name = yrsel1, showlegend = F)
   
   out <- subplot(p1, p2, nrows = 2, shareX = T, shareY = T, which_layout = 'merge', margin = 0.04) %>% 
-    layout(legend = list(orientation = "h", xanchor = "center", x = 0.5, y = 0.5))
+    layout(legend = list(orientation = "h", xanchor = "center", x = 0.5, y = 0.52))
 
   return(out)
   
@@ -447,13 +447,77 @@ Column {.tabset .tabset-fade data-width=650}
 knitr::include_graphics('www/bannerimage.png')
 ```
 
-The Tampa Bay Nekton Index (TBNI) is a multimetric assessment method that quantifies the ecological health of the nekton community in Tampa Bay. The index provides a complementary approach to evaluating environmental condition that is supported by other assessment methods currently available for Tampa Bay (e.g., water quality report card, Benthic index, etc.).
+The Tampa Bay Nekton Index (TBNI) is a multimetric assessment too that quantifies the ecological health of the nekton community in Tampa Bay. The index provides a complementary approach to evaluating environmental condition that is supported by other assessment methods currently available for Tampa Bay (e.g., water quality report card, Benthic index, etc.). The different tabs on the dashboard can be used to view the long-term trends in the TBNI for each bay segment and individual monitoring stations.  
+
+1) __BAY SEGMENT RESULTS__: This tab shows the overall assessment of the TBNI as management action categories described in the methods tab. The tab includes an assessment matrix, time series plots of baywide and bay segment results, and an interactive map that shows action categories by year for bay segments and individual stations.
+1) __SITE DATA__: This tab shows TBNI results for selected stations, including an assessment of individual metric results.  An interactive map shows all stations across all years.  Selecting a station from the map creates plots showing the overall TBNI and metric outcomes.  Results for each metric can be viewed as scored values, raw values, and as percentiles relative to the rest of the sites on the map.
+
+The plots in this dashboard are interactive and display options can be controlled using a mouse. Most plots include a [control menu](https://help.plot.ly/zoom-pan-hover-controls/) on the top with different options for viewing the data.  For example, click the camera icon to download a png file for a plot.
+
+<br>
+```{r, fig.align='center', out.width='30%'}
+knitr::include_graphics('www/plotcontrols.PNG')
+```
+<br>
+
+#### Website information
+
+Technical questions about the TBNI can be sent to [Meagan Schrandt](mailto:Meagan.Schrandt@myfwc.com).  Questions and comments about the dashboard can be sent to [Marcus Beck](mailto:mbeck@tbep.org). The page source content can be viewed on [Github](https://github.com/tbep-tech/nekton-dash).  All data were obtained from the Fisheries Independent Monitoring program collected and maintained by the Florida Fish and Wildlife Conservation Commission (accessible [here](https://geodata.myfwc.com/datasets/68fb6774b58a40a08a6f87959aaa53c4_26/data)). Like this app? Share it on social media using the [\#TampaBayOpenSci](https://twitter.com/hashtag/TampaBayOpenSci?src=hashtag_click) hashtag.  
+
+Citation info here: DOI link
 
 </div>
 <div class = "col-md-2"></div>
 </div>
 
 ### METHODS
+
+
+<div class = "row">
+<div class = "col-md-2"></div>
+<div class = "col-md-8">
+
+The TBNI is a multimetric assessment method that quantifies the ecological health of the nekton community (fish and selected invertebrates) in Tampa Bay. The TBNI uses catch data from the Florida Fish and Wildlife Conservation Commission (FWC) Fish and Wildlife Research Institute’s (FWRI) Fisheries-Independent Monitoring (FIM) program. 
+
+Five metrics that are sensitive to stressor gradients and provide unique information about Nekton community response to environmental conditions are estimated from the FIM data. The TBNI metrics include: 
+
+<ul>
+	<li><b><i>NumTaxa</i></b>: Species richness</li>
+	<li><b><i>BenthicTaxa</i></b>: Species richness for benthic taxa</li>
+	<li><b><i>TaxaSelect</i></b>: Number of “selected” species (i.e., commercially and/or recreationally important)</li>
+	<li><b><i>NumGuilds</i></b>: Number of trophic guilds</li>
+	<li><b><i>Shannon</i></b>: Shannon Diversity (H)</li>
+</ul>
+
+Raw metrics are first calculated from the observed data and then scaled to a standard score from 0 – 10.  The overal TBNI score is then estimated from the scaled metrics as: 
+
+<center>__TBNI__ = 10 x Sum of Metric Scores / 5</center>
+
+TBNI scores range from 0 to 100, with lower scores suggesting a degraded nekton community and higher scores suggesting a community that is similar to reference or least impacted conditions. 
+
+<br>
+```{r, fig.align='center', out.width='60%', fig.cap = 'A degraded nekton community with low diversity and abundance of organisms and poor water quality conditions.  Sites with __low TBNI scores__ may have similar characteristics.'}
+knitr::include_graphics('www/lotbni.png')
+```
+<br>
+
+<br>
+```{r, fig.align='center', out.width='60%', fig.cap = 'A healty nekton community with high diversity and abundance of organisms and good water quality conditions.  Sites with __high TBNI scores__ may have similar characteristics.'}
+knitr::include_graphics('www/hitbni.png')
+```
+<br>
+
+TBNI scores can be translated into...
+
+<span style="color:#33FF3B; text-shadow: 0 0 3px #333;">__Stay the Course__</span>: Continue planned projects. Report data via annual progress reports. 
+
+<span style="color:#F9FF33; text-shadow: 0 0 3px #333;">__Caution__</span>: Review monitoring data and identify additional research/monitoring needs. Begin/continue TAC and Management Board development of specific management recommendations.
+
+<span style="color:#FF3333; text-shadow: 0 0 3px #333;">__On Alert__</span>: Finalize development and implement appropriate management actions to get nekton community back on track.
+
+</div>
+<div class = "col-md-2"></div>
+</div>
 
 ### DOWNLOAD DATA
 
@@ -477,8 +541,9 @@ output$timplo <- renderPlotly(timplo())
 plotlyOutput('timplo')
 ```
 
-
 ### Using this tab
+
+This tab shows the overall assessment of the TBNI as management action categories described in the methods tab. The tab includes an assessment matrix, time series plots of baywide and bay segment results, and an interactive map that shows action categories by year for bay segments and individual stations.
 
 Column {data-width=500}
 -----------------------------------------------------------------------
@@ -497,7 +562,7 @@ fillCol(flex = c(NA, 1),
 )
 ```
 
-2 SITE TRENDS
+2 SITE DATA
 ===========================================================
 
 Column {.tabset .tabset-fade data-width=275}
@@ -510,6 +575,8 @@ leafletOutput('map')
 ```
 
 ### Using this tab
+
+This tab shows TBNI results for selected stations, including an assessment of individual metric results.  An interactive map shows all stations across all years.  Selecting a station from the map creates plots showing the overall TBNI and metric outcomes.  Results for each metric can be viewed as scored values, raw values, and as percentiles relative to the rest of the sites on the map.
 
 Column {data-width=500}
 -----------------------------------------------------------------------
