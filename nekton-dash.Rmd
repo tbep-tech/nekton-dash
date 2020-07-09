@@ -63,7 +63,7 @@ tbniyrs <- tbniscr %>%
 # fimstations, clip by segment extents
 tbnistations <- fimstations %>% 
   left_join(tbniscr, by = 'Reference') %>% 
-  select(Reference, Year, Month, TBNI_Score) %>% 
+  select(Reference, Year, Month, TBNI_Score, NumTaxa, BenthicTaxa, TaxaSelect, NumGuilds, Shannon) %>% 
   mutate(
     Action = findInterval(TBNI_Score, perc),
     outcome = factor(Action, levels = c('0', '1', '2'), labels = c('red', 'yellow', 'green')),
@@ -194,6 +194,10 @@ fimplo <- reactive({
 # select fim station data text
 fimtxt <- reactive({
   
+  validate(
+    need(!is.null(selsit), 'Select a station on the map to show results')
+  )
+  
   # input
   fimplo <- fimplo()
   
@@ -223,11 +227,9 @@ numtgauge <- reactive({
   
   # input
   fimplo <- fimplo()
-
-  out <- gauge(fimplo$ScoreNumTaxa, min = 0, max = 10, label = 'Taxa score', gaugeSectors(
-     danger = c(0, 3), warning = c(3, 7), success = c(7, 10),
-     colors = rev(cols)
-    ))
+  rawsel <- input$rawsel
+  
+  out <- gaugefun(fimplo, tbniscr, cols, 'NumTaxa', 'Number of Taxa', raw = rawsel)
   
   return(out)
   
@@ -238,12 +240,10 @@ bentgauge <- reactive({
   
   # input
   fimplo <- fimplo()
-
-  out <- gauge(fimplo$ScoreBenthicTaxa, min = 0, max = 10, label = 'Benthic score', gaugeSectors(
-     danger = c(0, 3), warning = c(3, 7), success = c(7, 10),
-     colors = rev(cols)
-    ))
+  rawsel <- input$rawsel
   
+  out <- gaugefun(fimplo, tbniscr, cols, 'BenthicTaxa', 'Benthic Taxa', raw = rawsel)
+
   return(out)
   
 })
@@ -253,12 +253,10 @@ seltgauge <- reactive({
   
   # input
   fimplo <- fimplo()
+  rawsel <- input$rawsel
 
-  out <- gauge(fimplo$ScoreTaxaSelect, min = 0, max = 10, label = 'Selected score', gaugeSectors(
-     danger = c(0, 3), warning = c(3, 7), success = c(7, 10),
-     colors = rev(cols)
-    ))
-  
+  out <- gaugefun(fimplo, tbniscr, cols, 'TaxaSelect', 'Selected Taxa', raw = rawsel)
+
   return(out)
   
 })
@@ -268,11 +266,9 @@ guilgauge <- reactive({
   
   # input
   fimplo <- fimplo()
-
-  out <- gauge(fimplo$ScoreNumGuilds, min = 0, max = 10, label = 'Guilds score', gaugeSectors(
-     danger = c(0, 3), warning = c(3, 7), success = c(7, 10),
-     colors = rev(cols)
-    ))
+  rawsel <- input$rawsel
+  
+  out <- gaugefun(fimplo, tbniscr, cols, 'NumGuilds', 'Number of Guilds', raw = rawsel)
   
   return(out)
   
@@ -283,71 +279,74 @@ shangauge <- reactive({
   
   # input
   fimplo <- fimplo()
-
-  out <- gauge(fimplo$ScoreShannon, min = 0, max = 10, label = 'Shannon score', gaugeSectors(
-     danger = c(0, 3), warning = c(3, 7), success = c(7, 10),
-     colors = rev(cols)
-    ))
+  rawsel <- input$rawsel
+  
+  out <- gaugefun(fimplo, tbniscr, cols, 'Shannon', 'Shannon diversity', raw = rawsel)
   
   return(out)
   
 })
 
-# number of taxa gauge, raw
-numtrgauge <- reactive({
+# number of taxa gauge
+numtqgauge <- reactive({
   
   # input
   fimplo <- fimplo()
+  fimyrs <- fimyrs()
   
-  out <- rawgaugefun(fimplo, tbniscr, cols, 'NumTaxa', 'Number of Taxa')
+  out <- gaugeqfun(fimplo, fimyrs, 'NumTaxa', 'Number of Taxa')
   
   return(out)
   
 })
 
-# number of benthic taxa gauge, raw
-bentrgauge <- reactive({
+# number of benthic taxa gauge
+bentqgauge <- reactive({
   
   # input
   fimplo <- fimplo()
+  fimyrs <- fimyrs()
   
-  out <- rawgaugefun(fimplo, tbniscr, cols, 'BenthicTaxa', 'Benthic Taxa')
+  out <- gaugeqfun(fimplo, fimyrs, 'BenthicTaxa', 'Benthic Taxa')
 
   return(out)
   
 })
 
-# selected taxa gauge, raw
-seltrgauge <- reactive({
+# selected taxa gauge
+seltqgauge <- reactive({
   
   # input
   fimplo <- fimplo()
+  fimyrs <- fimyrs()
 
-  out <- rawgaugefun(fimplo, tbniscr, cols, 'TaxaSelect', 'Selected Taxa')
+  out <- gaugeqfun(fimplo, fimyrs, 'TaxaSelect', 'Selected Taxa')
 
   return(out)
   
 })
 
-# number of guilds gauge, raw
-guilrgauge <- reactive({
+# number of guilds gauge
+guilqgauge <- reactive({
   
   # input
   fimplo <- fimplo()
+  fimyrs <- fimyrs()
   
-  out <- rawgaugefun(fimplo, tbniscr, cols, 'NumGuilds', 'Number of Guilds')
+  out <- gaugeqfun(fimplo, fimyrs, 'NumGuilds', 'Number of Guilds')
   
   return(out)
   
 })
 
-# shannon diversity gauge, raw
-shanrgauge <- reactive({
+# shannon diversity gauge
+shanqgauge <- reactive({
   
   # input
   fimplo <- fimplo()
+  fimyrs <- fimyrs()
   
-  out <- rawgaugefun(fimplo, tbniscr, cols, 'Shannon', 'Shannon diversity')
+  out <- gaugeqfun(fimplo, fimyrs, 'Shannon', 'Shannon diversity')
   
   return(out)
   
@@ -521,11 +520,11 @@ output$bentgauge <- renderGauge(bentgauge())
 output$seltgauge <- renderGauge(seltgauge())
 output$guilgauge <- renderGauge(guilgauge())
 output$shangauge <- renderGauge(shangauge())
-output$numtrgauge <- renderGauge(numtrgauge())
-output$bentrgauge <- renderGauge(bentrgauge())
-output$seltrgauge <- renderGauge(seltrgauge())
-output$guilrgauge <- renderGauge(guilrgauge())
-output$shanrgauge <- renderGauge(shanrgauge())
+output$numtqgauge <- renderGauge(numtqgauge())
+output$bentqgauge <- renderGauge(bentqgauge())
+output$seltqgauge <- renderGauge(seltqgauge())
+output$guilqgauge <- renderGauge(guilqgauge())
+output$shanqgauge <- renderGauge(shanqgauge())
 
 fillCol(flex = c(NA, NA, 1, NA, 1, NA, 1),
   column(12,
@@ -538,22 +537,26 @@ fillCol(flex = c(NA, NA, 1, NA, 1, NA, 1),
   fillRow(
     gaugeOutput('tbnigauge')
     ), 
-  h4('Scored metrics'), 
-  fillRow(
+  h4('Metrics'),
+  fillCol(
+    flex = c(NA, 1),
+    materialSwitch(inputId = 'rawsel', label = 'Show raw metric values?'),  
+    fillRow(
     gaugeOutput('numtgauge'),
     gaugeOutput('bentgauge'),
     gaugeOutput('seltgauge'),
     gaugeOutput('guilgauge'),
     gaugeOutput('shangauge')
-    ),
-  h4('Raw metrics'), 
-  fillRow(
-    gaugeOutput('numtrgauge'),
-    gaugeOutput('bentrgauge'),
-    gaugeOutput('seltrgauge'),
-    gaugeOutput('guilrgauge'),
-    gaugeOutput('shanrgauge')
     )
+    ),
+  h4(renderText(paste0('Site percentiles compared to all sites from ', paste(input$yrsel2, collapse = ' to ')))), 
+  fillRow(
+    gaugeOutput('numtqgauge'),
+    gaugeOutput('bentqgauge'),
+    gaugeOutput('seltqgauge'),
+    gaugeOutput('guilqgauge'),
+    gaugeOutput('shanqgauge')
+  )
 )
 ```
 
