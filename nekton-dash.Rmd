@@ -149,10 +149,18 @@ timplo <- reactive({
   
   # input
   yrsel1 <- input$yrsel1
+
+  # all segments averaged    
+  p1 <- show_tbniscrall(tbniscr, plotly = T) %>% 
+    add_segments(x = yrsel1, xend = yrsel1, y = 0, yend = 100, line = list(color = 'red'), name = yrsel1, showlegend = F)
   
-  out <- show_tbniscr(tbniscr, plotly = T) %>% 
-    add_segments(x = yrsel1, xend = yrsel1, y = 0, yend = 100, line = list(color = 'red'), name = yrsel1)
+  # separate bay segments
+  p2 <- show_tbniscr(tbniscr, plotly = T) %>% 
+    add_segments(x = yrsel1, xend = yrsel1, y = 0, yend = 100, line = list(color = 'red'), name = yrsel1, showlegend = F)
   
+  out <- subplot(p1, p2, nrows = 2, shareX = T, shareY = T, which_layout = 'merge', margin = 0.04) %>% 
+    layout(legend = list(orientation = "h", xanchor = "center", x = 0.5, y = 0.5))
+
   return(out)
   
 })
