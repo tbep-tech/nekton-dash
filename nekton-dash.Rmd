@@ -42,6 +42,9 @@ cols <- c('red', 'yellow', 'green')
 # base matrix
 tbnimat <- show_tbnimatrix(tbniscr, family = fml, txtsz = NULL) 
 
+# fimstations filtered by bay segments
+fimstations <- fimstations[tbseg, ]
+
 # annually averaged data
 tbniyrs <- tbniscr %>%
   select(Reference, Year, TBNI_Score, matches('Score')) %>% 
@@ -58,7 +61,7 @@ tbniyrs <- tbniscr %>%
   )
 
 # fimstations, clip by segment extents
-tbnistations <- fimstations[tbseg, ] %>% 
+tbnistations <- fimstations %>% 
   left_join(tbniscr, by = 'Reference') %>% 
   select(Reference, Year, Month, TBNI_Score) %>% 
   mutate(
@@ -139,6 +142,19 @@ attmat <- reactive({
   
   return(out)
 
+})
+
+# time series plots
+timplo <- reactive({
+  
+  # input
+  yrsel1 <- input$yrsel1
+  
+  out <- show_tbniscr(tbniscr, plotly = T) %>% 
+    add_segments(x = yrsel1, xend = yrsel1, y = 0, yend = 100, line = list(color = 'red'), name = yrsel1)
+  
+  return(out)
+  
 })
 
 # select fim years on station selection plot
@@ -443,6 +459,14 @@ Column {.tabset .tabset-fade data-width=275}
 output$attmat <- renderPlotly(attmat())
 plotlyOutput('attmat')
 ```
+
+### TIME SERIES PLOTS
+
+```{r}
+output$timplo <- renderPlotly(timplo())
+plotlyOutput('timplo')
+```
+
 
 ### Using this tab
 
