@@ -94,19 +94,19 @@ seltab <- reactive({
   dlyrsel <- input$dlyrsel
   rawsel1 <- input$rawsel1
   
-  tabsel <- tbniscr %>% 
+  sel <- tbniscr %>% 
     filter(bay_segment %in% !!dlsegsel) %>% 
     filter(Year %in% !!dlyrsel)
   
   if(rawsel1)
-    tabsel <- tabsel %>% 
+    sel <- sel %>% 
       select(-matches('^Score'))
   
   if(!rawsel1)
-    tabsel <- tabsel %>% 
+    sel <- sel %>% 
       select(Reference, Year, Month, Season, bay_segment, TBNI_Score, matches('Score'))
 
-  out <- tabsel %>%   
+  out <- sel %>%   
     mutate(
       Action = findInterval(TBNI_Score, perc),
       Action = factor(Action, levels = c('0', '1', '2'), labels = c('On Alert', 'Caution', 'Stay the Course')), 
@@ -123,9 +123,9 @@ seltab <- reactive({
 rctseltab <- reactive({
   
   # input
-  tabsel <- tabsel()
+  seltab <- seltab()
   
-  out <- reactable(tabsel,
+  out <- reactable(seltab,
     columns = list(
       Reference = colDef(name = 'Station'), 
       bay_segment = colDef(name = 'Bay segment'), 
