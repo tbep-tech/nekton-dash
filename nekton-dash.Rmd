@@ -86,6 +86,64 @@ avedat <- anlz_tbniave(tbniscr)
 ```
 
 ```{r reactives}
+# table for reactable and download
+seltab <- reactive({
+  
+  # input
+  dlsegsel <- input$dlsegsel
+  dlyrsel <- input$dlyrsel
+  rawsel1 <- input$rawsel1
+  
+  tabsel <- tbniscr %>% 
+    filter(bay_segment %in% !!dlsegsel) %>% 
+    filter(Year %in% !!dlyrsel)
+  
+  if(rawsel1)
+    tabsel <- tabsel %>% 
+      select(-matches('^Score'))
+  
+  if(!rawsel1)
+    tabsel <- tabsel %>% 
+      select(Reference, Year, Month, Season, bay_segment, TBNI_Score, matches('Score'))
+
+  tabsel <- tabsel %>%   
+    mutate(
+      Action = findInterval(TBNI_Score, perc),
+      Action = factor(Action, levels = c('0', '1', '2'), labels = c('On Alert', 'Caution', 'Stay the Course')), 
+      Action = as.character(Action)
+    )
+
+  req(nrow(tabsel) > 0)
+  
+  out <- reactable(tabsel,
+    columns = list(
+      Reference = colDef(name = 'Station'), 
+      bay_segment = colDef(name = 'Bay segment'), 
+      Action = colDef(style = function(value){
+        
+        color <- case_when(
+          value == 'On Alert' ~ '#FF000080', 
+          value == 'Caution' ~ '#FFFF00', 
+          value == 'Stay the Course' ~ '#00FF0080'
+        )  
+        
+        list(color = color, fontWeight = "bold")
+        
+      })
+    ),
+    defaultColDef = colDef(
+      footerStyle = list(fontWeight = "bold"),
+      format = colFormat(digits = 0, separators = F),
+      resizable = TRUE
+    ),
+   filterable = T,
+   defaultPageSize = 15
+  )
+  
+  return(out)
+  
+})
+
 # site attainment map
 attmap <- reactive({
   
@@ -238,9 +296,9 @@ numtgauge <- reactive({
   
   # input
   fimplo <- fimplo()
-  rawsel <- input$rawsel
+  rawsel2 <- input$rawsel2
   
-  out <- gaugefun(fimplo, tbniscr, cols, 'NumTaxa', 'Number of Taxa', raw = rawsel)
+  out <- gaugefun(fimplo, tbniscr, cols, 'NumTaxa', 'Number of Taxa', raw = rawsel2)
   
   return(out)
   
@@ -251,9 +309,9 @@ bentgauge <- reactive({
   
   # input
   fimplo <- fimplo()
-  rawsel <- input$rawsel
+  rawsel2 <- input$rawsel2
   
-  out <- gaugefun(fimplo, tbniscr, cols, 'BenthicTaxa', 'Benthic Taxa', raw = rawsel)
+  out <- gaugefun(fimplo, tbniscr, cols, 'BenthicTaxa', 'Benthic Taxa', raw = rawsel2)
 
   return(out)
   
@@ -264,9 +322,9 @@ seltgauge <- reactive({
   
   # input
   fimplo <- fimplo()
-  rawsel <- input$rawsel
+  rawsel2 <- input$rawsel2
 
-  out <- gaugefun(fimplo, tbniscr, cols, 'TaxaSelect', 'Selected Taxa', raw = rawsel)
+  out <- gaugefun(fimplo, tbniscr, cols, 'TaxaSelect', 'Selected Taxa', raw = rawsel2)
 
   return(out)
   
@@ -277,9 +335,9 @@ guilgauge <- reactive({
   
   # input
   fimplo <- fimplo()
-  rawsel <- input$rawsel
+  rawsel2 <- input$rawsel2
   
-  out <- gaugefun(fimplo, tbniscr, cols, 'NumGuilds', 'Number of Guilds', raw = rawsel)
+  out <- gaugefun(fimplo, tbniscr, cols, 'NumGuilds', 'Number of Guilds', raw = rawsel2)
   
   return(out)
   
@@ -290,9 +348,9 @@ shangauge <- reactive({
   
   # input
   fimplo <- fimplo()
-  rawsel <- input$rawsel
+  rawsel2 <- input$rawsel2
   
-  out <- gaugefun(fimplo, tbniscr, cols, 'Shannon', 'Shannon diversity', raw = rawsel)
+  out <- gaugefun(fimplo, tbniscr, cols, 'Shannon', 'Shannon diversity', raw = rawsel2)
   
   return(out)
   
@@ -434,7 +492,18 @@ observeEvent(input$map_marker_click, {
 ```
 
 ```{r downloadhandlers}
-
+# tbni data
+output$seldl <- downloadHandler(
+  filename = function(){'tbnidat.csv'},
+  content = function(file){
+    
+    # inputs
+    seltab <- seltab()
+    
+    write.csv(seltab, file, quote = T, row.names = F)
+    
+  }
+)
 ```
 
 OVERVIEW
@@ -531,6 +600,20 @@ Similar to other reporting indicators for Tampa Bay (e.g., water quality [report
 </div>
 
 ### DOWNLOAD DATA
+
+```{r}
+output$seltab <- renderReactable(seltab())
+
+fillCol(flex = c(0.1, NA, 1),
+  fillRow(
+    selectInput('dlyrsel', 'Select years:', choices = unique(tbniscr$Year), selected = maxyr, multiple = T),
+    selectInput('dlsegsel', 'Select bay segments:', choices = unique(tbniscr$bay_segment), selected = unique(tbniscr$bay_segment), multiple = T),
+    materialSwitch(inputId = 'rawsel1', label = 'Raw metric values?')
+    ),
+  downloadBttn('seldl', 'Download data', style = 'simple', block = T, color = 'success'),
+  reactableOutput('seltab')
+)
+```
 
 1 BAY SEGMENT RESULTS
 ===========================================================
@@ -727,7 +810,7 @@ fillCol(flex = c(NA, NA, 1, NA, 1, NA, 1),
   h4('Metrics'),
   fillCol(
     flex = c(NA, 1),
-    materialSwitch(inputId = 'rawsel', label = 'Show raw metric values?'),  
+    materialSwitch(inputId = 'rawsel2', label = 'Show raw metric values?'),  
     fillRow(
     gaugeOutput('numtgauge'),
     gaugeOutput('bentgauge'),
