@@ -490,13 +490,11 @@ The TBNI is a multimetric assessment method that quantifies the ecological healt
 
 Five nekton metrics that are sensitive to stressor gradients and provide unique information about Nekton community response to environmental conditions are estimated from the FIM data. The TBNI metrics include: 
 
-<ul>
-	<li><b><i>NumTaxa</i></b>: Species richness</li>
-	<li><b><i>BenthicTaxa</i></b>: Species richness for benthic taxa</li>
-	<li><b><i>TaxaSelect</i></b>: Number of “selected” species (i.e., commercially and/or recreationally important)</li>
-	<li><b><i>NumGuilds</i></b>: Number of trophic guilds</li>
-	<li><b><i>Shannon</i></b>: Shannon Diversity (H)</li>
-</ul>
+*	*__NumTaxa__*: Species richness
+*	*__BenthicTaxa__*: Species richness for benthic taxa
+*	*__TaxaSelect__*: Number of “selected” species (i.e., commercially and/or recreationally important)
+*	*__NumGuilds__*: Number of trophic guilds
+*	*__Shannon__*: Shannon Diversity (H)
 
 Raw metrics are first calculated from the observed data and then scaled to a standard score from 0 – 10.  The overall TBNI score is then estimated from the scaled metrics as: 
 
@@ -534,7 +532,7 @@ Similar to other reporting indicators for Tampa Bay (e.g., water quality [report
 
 ### DOWNLOAD DATA
 
-1. BAY SEGMENT RESULTS
+1 BAY SEGMENT RESULTS
 ===========================================================
 
 Column {.tabset .tabset-fade data-width=275}
@@ -659,13 +657,11 @@ The colors on the gauges represent the action categories defined for the TBNI.  
 
 The second and third rows show gauges for each of five metrics used in the TBNI: 
 
-<ul>
-	<li><b><i>NumTaxa</i></b>: Species richness</li>
-	<li><b><i>BenthicTaxa</i></b>: Species richness for benthic taxa</li>
-	<li><b><i>TaxaSelect</i></b>: Number of “selected” species (i.e., commercially and/or recreationally important)</li>
-	<li><b><i>NumGuilds</i></b>: Number of trophic guilds</li>
-	<li><b><i>Shannon</i></b>: Shannon Diversity (H)</li>
-</ul>
+*	*__NumTaxa__*: Species richness
+*	*__BenthicTaxa__*: Species richness for benthic taxa
+*	*__TaxaSelect__*: Number of “selected” species (i.e., commercially and/or recreationally important)
+*	*__NumGuilds__*: Number of trophic guilds
+*	*__Shannon__*: Shannon Diversity (H)
 
 The *Metrics* gauges show the scaled or raw values for each of the five metrics.  The scaled values are shown by default and range from 0-10 for each metric.  
 
