@@ -106,14 +106,24 @@ seltab <- reactive({
     tabsel <- tabsel %>% 
       select(Reference, Year, Month, Season, bay_segment, TBNI_Score, matches('Score'))
 
-  tabsel <- tabsel %>%   
+  out <- tabsel %>%   
     mutate(
       Action = findInterval(TBNI_Score, perc),
       Action = factor(Action, levels = c('0', '1', '2'), labels = c('On Alert', 'Caution', 'Stay the Course')), 
       Action = as.character(Action)
     )
 
-  req(nrow(tabsel) > 0)
+  req(nrow(out) > 0)
+  
+  return(out)
+  
+})
+
+# reactable table
+rctseltab <- reactive({
+  
+  # input
+  tabsel <- tabsel()
   
   out <- reactable(tabsel,
     columns = list(
@@ -602,7 +612,7 @@ Similar to other reporting indicators for Tampa Bay (e.g., water quality [report
 ### DOWNLOAD DATA
 
 ```{r}
-output$seltab <- renderReactable(seltab())
+output$rctseltab <- renderReactable(rctseltab())
 
 fillCol(flex = c(0.1, NA, 1),
   fillRow(
@@ -611,7 +621,7 @@ fillCol(flex = c(0.1, NA, 1),
     materialSwitch(inputId = 'rawsel1', label = 'Raw metric values?')
     ),
   downloadBttn('seldl', 'Download data', style = 'simple', block = T, color = 'success'),
-  reactableOutput('seltab')
+  reactableOutput('rctseltab')
 )
 ```
 
