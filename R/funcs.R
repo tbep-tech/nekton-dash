@@ -5,16 +5,19 @@ gaugefun <- function(fimplo, tbniscr, cols, colnm, ttl, raw = FALSE){
 
   if(!raw){
     
-    out <- gauge(scrmet, min = 0, max = 10, label = ttl, gaugeSectors(
+    lab <- paste('Score', ttl)
+    out <- gauge(scrmet, min = 0, max = 10, label = lab, gaugeSectors(
       danger = c(0, 3), warning = c(3, 7), success = c(7, 10),
       colors = rev(cols)
     ))
+    
+    return(out)
     
   }
   
    
   if(raw){
-    
+
     # get color from metric value, assign to raw for continuity
     col <- findInterval(scrmet, c(0, 3, 7, 10), rightmost.closed = T)
     col <- case_when(
@@ -27,9 +30,9 @@ gaugefun <- function(fimplo, tbniscr, cols, colnm, ttl, raw = FALSE){
     
     out <- gauge(round(fimplo[, colnm, drop = T], 1), min = qnts[1], max = qnts[2],label = ttl, gaugeSectors(colors = col))
     
+    return(out)
+    
   }
-  
-  return(out)
   
 }
 

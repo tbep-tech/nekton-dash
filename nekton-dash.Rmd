@@ -127,14 +127,14 @@ rctseltab <- reactive({
   
   out <- reactable(seltab,
     columns = list(
-      Reference = colDef(name = 'Station'), 
+      Reference = colDef(name = 'Site'), 
       bay_segment = colDef(name = 'Bay segment'), 
       Action = colDef(style = function(value){
         
         color <- case_when(
           value == 'On Alert' ~ '#FF000080', 
-          value == 'Caution' ~ '#FFFF00', 
-          value == 'Stay the Course' ~ '#00FF0080'
+          value == 'Caution' ~ '#EEEE00', #'#FFFF00', 
+          value == 'Stay the Course' ~ '#00CD00'#'#00FF0080'
         )  
         
         list(color = color, fontWeight = "bold")
@@ -196,7 +196,7 @@ attmap <- reactive({
       weight = 1,
       fillOpacity = 1,
       radius= 4,#~scales::rescale(val, from = scls, to = c(5, 20)),
-      label = ~paste0('Station ', Reference, ' (TBNI: ', round(TBNI_Score, 1), ', action: ', Action)
+      label = ~paste0('Site ', Reference, ' (TBNI: ', round(TBNI_Score, 1), ', action: ', Action)
     ) %>% 
     addLegend("topright", labels = c("Stay the Course", "Caution", "On Alert"), colors = rev(cols), title = "Bay segment/site <br>matrix outcomes", opacity = 1)
   
@@ -274,7 +274,7 @@ fimplo <- reactive({
 fimtxt <- reactive({
   
   validate(
-    need(!is.null(selsit), 'Select a station on the map to show results')
+    need(!is.null(selsit), 'Select a site on the map to show results')
   )
   
   # input
@@ -366,7 +366,7 @@ shangauge <- reactive({
   
 })
 
-# number of taxa gauge
+# number of taxa gauge, percentile
 numtqgauge <- reactive({
   
   # input
@@ -379,7 +379,7 @@ numtqgauge <- reactive({
   
 })
 
-# number of benthic taxa gauge
+# number of benthic taxa gauge, percentile
 bentqgauge <- reactive({
   
   # input
@@ -392,7 +392,7 @@ bentqgauge <- reactive({
   
 })
 
-# selected taxa gauge
+# selected taxa gauge, percentile
 seltqgauge <- reactive({
   
   # input
@@ -405,7 +405,7 @@ seltqgauge <- reactive({
   
 })
 
-# number of guilds gauge
+# number of guilds gauge, percentile
 guilqgauge <- reactive({
   
   # input
@@ -418,7 +418,7 @@ guilqgauge <- reactive({
   
 })
 
-# shannon diversity gauge
+# shannon diversity gauge, percentile
 shanqgauge <- reactive({
   
   # input
@@ -446,11 +446,14 @@ output$map <- renderLeaflet({
     addCircleMarkers(
       data = fimyrs, 
       layerId = ~Reference,
-      stroke = F,
-      fillOpacity = 0.5,
-      radius = 7, 
+      stroke = T,
+      color = 'black',
+      fill = TRUE,
+      fillOpacity = 1,
+      weight = 1, 
+      radius = 4, 
       fillColor = ~outcome,
-      label = ~paste0('Station ', Reference, ' (TBNI: ', round(TBNI_Score, 1), ', action: ', Action)
+      label = ~paste0('Site ', Reference, ' (TBNI: ', round(TBNI_Score, 1), ', action: ', Action)
     )
   
 })
@@ -481,11 +484,14 @@ observeEvent(input$map_marker_click, {
     addCircleMarkers(
       data = fimyrs,
       layerId = ~Reference,
-      stroke = F,
-      fillOpacity = 0.5,
-      radius = 7, 
+      stroke = T,
+      color = 'black',
+      fill = TRUE,
+      fillOpacity = 1,
+      weight = 1, 
+      radius = 4, 
       fillColor = ~outcome,
-      label = ~paste0('Station ', Reference, ' (TBNI: ', round(TBNI_Score, 1), ', action: ', Action)
+      label = ~paste0('Site ', Reference, ' (TBNI: ', round(TBNI_Score, 1), ', action: ', Action)
     ) %>%    
     addCircleMarkers(
       data = selsitplo,
@@ -534,10 +540,10 @@ Column {.tabset .tabset-fade data-width=650}
 knitr::include_graphics('www/bannerimage.png')
 ```
 
-The Tampa Bay Nekton Index (TBNI) is a multimetric assessment too that quantifies the ecological health of the nekton community in Tampa Bay. The index provides a complementary approach to evaluating environmental condition that is supported by other assessment methods currently available for Tampa Bay (e.g., water quality report card, Benthic index, etc.). The different tabs on the dashboard can be used to view the long-term trends in the TBNI for each bay segment and individual monitoring stations.  
+The Tampa Bay Nekton Index (TBNI) is a multimetric assessment tool that quantifies the ecological health of the nekton community in Tampa Bay. The index provides a complementary approach to other environmental assessment methods currently available for Tampa Bay (e.g., water quality report card, Benthic index, etc.). The different tabs on the dashboard can be used to view the long-term trends in the TBNI for each bay segment and at individual locations where fish were sampled throughout Tampa Bay.  
 
-1) __BAY SEGMENT RESULTS__: This tab shows the overall assessment of the TBNI as management action categories described in the methods tab. The tab includes an assessment matrix, time series plots of baywide and bay segment results, and an interactive map that shows action categories by year for bay segments and individual stations.
-1) __SITE DATA__: This tab shows TBNI results for selected stations, including an assessment of individual metric results.  An interactive map shows all stations across all years.  Selecting a station from the map creates plots showing the overall TBNI and metric outcomes.  Results for each metric can be viewed as scored values, raw values, and as percentiles relative to the rest of the sites on the map.
+1) __BAY SEGMENT RESULTS__: This tab shows the overall assessment of the TBNI as management action categories described in the methods tab. The tab includes an assessment matrix, time series plots of baywide and bay segment results, and an interactive map that shows action categories by year for bay segments and individual sites.
+1) __SITE DATA__: This tab shows TBNI results for selected sites, including an assessment of individual metric results.  An interactive map shows all sites across all years.  Selecting a site from the map creates plots showing the overall TBNI and metric outcomes.  Results for each metric can be viewed as scored values, raw values, and as percentiles relative to the rest of the sites on the map.
 
 The plots in this dashboard are interactive and display options can be controlled using a mouse. Most plots include a [control menu](https://help.plot.ly/zoom-pan-hover-controls/) on the top with different options for viewing the data.  For example, click the camera icon to download a png file for a plot.
 
@@ -565,9 +571,9 @@ Citation info here: [![DOI](https://zenodo.org/badge/276705811.svg)](https://zen
 
 #### How to understand and use the TBNI
 
-The TBNI is a multimetric assessment method that quantifies the ecological health of the nekton community (fish and selected invertebrates) in Tampa Bay. The TBNI uses catch data from the Florida Fish and Wildlife Conservation Commission (FWC) Fish and Wildlife Research Institute’s (FWRI) Fisheries-Independent Monitoring (FIM) program (data available [here](https://geodata.myfwc.com/datasets/68fb6774b58a40a08a6f87959aaa53c4_26/data)). Different sampling gears are used in the FIM database.  Catch results from a center-bag seine have the longest and most consistent record and were used to develop the TBNI. These include counts and taxa identification for individuals caught in near shore areas, generally as early recruits, juveniles, and smaller-bodied nekton. All fish and selected invertebrates are identified to the lowest possible taxon (usually species), counted, and a subset are measured. Current protocols were established in 1998 and TBNI estimates are unavailable prior to this date.
+The TBNI is a multimetric assessment method that quantifies the ecological health of the nekton community (fish and selected invertebrates) in Tampa Bay. The TBNI uses catch data from the Florida Fish and Wildlife Conservation Commission (FWC) Fish and Wildlife Research Institute’s (FWRI) Fisheries-Independent Monitoring (FIM) program (data available [here](https://geodata.myfwc.com/datasets/68fb6774b58a40a08a6f87959aaa53c4_26/data)). The FIM program uses multiple gear types to sample inshore fish populations in Tampa Bay and other estuaries in the state. The TBNI uses catch data from the 21.3-m bag that has the longest, most consistent sampling record. This gampling gear is ideal for collecting fish in near shore areas, generally as early recruits, juveniles, and smaller-bodied nekton. All fish and selected invertebrates are identified to the lowest possible taxon (usually species), counted, and a subset are measured. Current protocols were established in 1998 and TBNI estimates are unavailable prior to this date.
 
-Five nekton metrics that are sensitive to stressor gradients and provide unique information about Nekton community response to environmental conditions are estimated from the FIM data. The TBNI metrics include: 
+Five nekton metrics are estimated from the FIM data. These metrics are sensitive to stressor gradients and provide unique information about Nekton community response to environmental conditions in Tampa Bay. The TBNI metrics include: 
 
 *	*__NumTaxa__*: Species richness
 *	*__BenthicTaxa__*: Species richness for benthic taxa
@@ -584,18 +590,18 @@ Raw metrics are first calculated from the observed data and then scaled to a sta
 TBNI scores range from 0 to 100, with lower scores suggesting a degraded nekton community and higher scores suggesting a community that is similar to reference or least impacted conditions. 
 
 <br>
-```{r, fig.align='center', out.width='70%', fig.cap = 'A degraded nekton community with low diversity and low abundance of organisms.  Water quality and habitat conditions may also be degraded.  Sites with __low TBNI scores__ may have similar characteristics.'}
+```{r, fig.align='center', out.width='70%', fig.cap = 'A __degraded nekton community__ with low diversity and low abundance of organisms.  Water quality and habitat conditions may also be degraded.  Sites with __low TBNI scores__ may have similar characteristics. Image symbols from [ian.umces.edu/symbols](https://ian.umces.edu/symbols).'}
 knitr::include_graphics('www/lotbni.png')
 ```
 <br>
 
 <br>
-```{r, fig.align='center', out.width='70%', fig.cap = 'A healthy nekton community with high diversity and high abundance of organisms.  Water quality and habitat conditions support a healthy nekton community.  Sites with __high TBNI scores__ may have similar characteristics.'}
+```{r, fig.align='center', out.width='70%', fig.cap = 'A __healthy nekton community__ with high diversity and high abundance of organisms.  Water quality and habitat conditions support a healthy nekton community.  Sites with __high TBNI scores__ may have similar characteristics. Image symbols from [ian.umces.edu/symbols](https://ian.umces.edu/symbols).'}
 knitr::include_graphics('www/hitbni.png')
 ```
 <br>
 
-TBNI scores can be translated into actionable management categories with narrative interpretations.  For example, scores above the median TBNI for the development dataset indicate a healthy nekton community with a management category of "Stay the Course".  Scores between the 33rd percentile and median are in the "Caution" category and scores below the 33rd percentile are in the "On Alert" category. Each action category has a narrative description to provide guidance to managers:
+TBNI scores can be translated into actionable management categories with narrative interpretations.  For example, scores above the median TBNI for the dataset used to develop the TBNI indicate a healthy nekton community with a management category of "Stay the Course".  Scores between the 33rd percentile and median are in the "Caution" category and scores below the 33rd percentile are in the "On Alert" category. Each action category has a narrative description to provide guidance to managers:
 
 <span style="color:#33FF3B; text-shadow: 0 0 3px #333;">__Stay the Course__</span>: Continue planned projects. Report data via annual progress reports. 
 
@@ -655,7 +661,7 @@ This tab shows the overall assessment of the TBNI as management action categorie
 
 <span style="color:#FF3333; text-shadow: 0 0 3px #333;">__On Alert__</span>: Finalize development and implement appropriate management actions to get nekton community back on track.
 
-The action categories are based on annual averages of all monitoring stations within each of four major segments in Tampa Bay (__OTB__: Old Tampa Bay, __HB__: Hillsborough Bay, __MTB__: Middle Tampa Bay, __LTB__: Lower Tampa Bay).  The results can be viewed in the *MATRIX RESULTS* tab. Hovering the mouse pointer over each cell shows the category assigned to each bay segment in each year.   
+The action categories are based on annual averages of scores at all locations where fish were sampled within each of four major segments in Tampa Bay (__OTB__: Old Tampa Bay, __HB__: Hillsborough Bay, __MTB__: Middle Tampa Bay, __LTB__: Lower Tampa Bay).  The results can be viewed in the *MATRIX RESULTS* tab. Hovering the mouse pointer over each cell shows the category assigned to each bay segment in each year.   
 
 <br>
 ```{r, out.width='70%', fig.align='center'}
@@ -681,7 +687,7 @@ knitr::include_graphics('www/tsplotex2.PNG')
 ```
 <br>
 
-The map on the right shows results for a given year, where the color for each bay segment shows the action category outcome based on the average of station results in each segment. The individual stations are also shown and color-coded by the action categories. Hovering the mouse over a station or bay segment will reveal additional information.  
+The map on the right shows results for a given year, where the color for each bay segment shows the action category outcome based on the average of site results in each segment. The individual sites are also shown and color-coded by the action categories. Hovering the mouse over a site or bay segment will reveal additional information.  
 
 <br>
 ```{r, out.width='70%', fig.align='center'}
@@ -689,9 +695,9 @@ knitr::include_graphics('www/mapex.PNG')
 ```
 <br>
 
-The above example shows results for station TBM2019091504, which was assigned an action category of <span style="color:#33FF3B; text-shadow: 0 0 3px #333;">__Stay the Course__</span> based on a TBNI score of 64.  
+The above example shows results for site TBM2019091504, which was assigned an action category of <span style="color:#33FF3B; text-shadow: 0 0 3px #333;">__Stay the Course__</span> based on a TBNI score of 64.  
 
-Finally, the year slider on the top can be used to select which year is shown on the map. A reference box on the *MATRIX RESULTS* tab and a reference line on the *TIME SERIES PLOTS* shows which year is selected. Selected the play button will cycle through all years in the data, with the maps and plots updating with each year. 
+Finally, the year slider on the top can be used to select which year is shown on the map. A reference box on the *MATRIX RESULTS* tab and a reference line on the *TIME SERIES PLOTS* shows which year is selected. Selecting the play button will cycle through all years in the data, with the maps and plots updating with each year. 
 
 Column {data-width=500}
 -----------------------------------------------------------------------
@@ -724,7 +730,7 @@ leafletOutput('map')
 
 ### Using this tab
 
-This tab shows TBNI results for selected stations, including an assessment of individual metric results.  An interactive map shows all stations across all years.  Begin by selecting a station from the map.  The selected station will be shown as a larger, darker point:
+This tab shows TBNI results for selected sites where fish were sampled in a given year, including an assessment of individual metric results.  An interactive map shows all sites across all years.  Begin by selecting a site from the map.  The selected site will be shown as a larger, darker point:
 
 <br>
 ```{r, fig.align='center', out.width='40%'}
@@ -732,7 +738,7 @@ knitr::include_graphics('www/stationsel.PNG')
 ```
 <br>
 
-Information about the selected station will appear on the right as several rows of "gauges".  Text will also indicate which station was selected, including the sample year and month (as a number from 1-12). 
+Information about the selected site will appear on the right as several rows of "gauges".  Text will also indicate which site was selected, including the sample year and month (as a number from 1-12). 
 
 <br>
 ```{r, fig.align='center', out.width='40%'}
@@ -740,7 +746,7 @@ knitr::include_graphics('www/stationsel2.PNG')
 ```
 <br>
 
-There are three rows of gauges that provide information about the selected station: 
+There are three rows of gauges that provide information about the selected site: 
 
 1) *TBNI total*: TBNI score for the site selection
 1) *Metrics*: Metric values for the site selection as scaled or raw values
