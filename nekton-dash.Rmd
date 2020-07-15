@@ -812,7 +812,7 @@ output$seltqgauge <- renderGauge(seltqgauge())
 output$guilqgauge <- renderGauge(guilqgauge())
 output$shanqgauge <- renderGauge(shanqgauge())
 
-fillCol(flex = c(NA, NA, 1, NA, 1, NA, 1),
+fillCol(flex = c(NA, NA, 0.5, NA, 1, NA, 1),
   column(12,
     column(6,
       sliderInput('yrsel2', 'Select year range on map:', min = 1998, max = maxyr, value = c(1998, maxyr), step = 1, sep = '', width = '200%')
@@ -830,7 +830,7 @@ fillCol(flex = c(NA, NA, 1, NA, 1, NA, 1),
     fillRow(
       renderUI(shinydashboard::box(gaugeOutput('numtgauge'), title = ttlfun('Number of taxa', input$rawsel2), width = 12)),
       renderUI(shinydashboard::box(gaugeOutput('bentgauge'), title = ttlfun('Benthic taxa', input$rawsel2), width = 12)),
-      renderUI(shinydashboard::box(gaugeOutput('seltgauge'), title = ttlfun('selected taxa', input$rawsel2), width = 12)),
+      renderUI(shinydashboard::box(gaugeOutput('seltgauge'), title = ttlfun('Selected taxa', input$rawsel2), width = 12)),
       renderUI(shinydashboard::box(gaugeOutput('guilgauge'), title = ttlfun('Number of guilds', input$rawsel2), width = 12)),
       renderUI(shinydashboard::box(gaugeOutput('shangauge'), title = ttlfun('Shannon diversity', input$rawsel2), width = 12))
     )
