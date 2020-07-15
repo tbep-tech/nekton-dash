@@ -360,7 +360,7 @@ shangauge <- reactive({
   fimplo <- fimplo()
   rawsel2 <- input$rawsel2
   
-  out <- gaugefun(fimplo, tbniscr, cols, 'Shannon', 'Shannon diversity', raw = rawsel2)
+  out <- gaugefun(fimplo, tbniscr, cols, 'Shannon', 'Shannon diversity', rawsel2)
   
   return(out)
   
@@ -828,20 +828,20 @@ fillCol(flex = c(NA, NA, 1, NA, 1, NA, 1),
     flex = c(NA, 1),
     materialSwitch(inputId = 'rawsel2', label = 'Show raw metric values?'),  
     fillRow(
-    gaugeOutput('numtgauge'),
-    gaugeOutput('bentgauge'),
-    gaugeOutput('seltgauge'),
-    gaugeOutput('guilgauge'),
-    gaugeOutput('shangauge')
+      renderUI(shinydashboard::box(gaugeOutput('numtgauge'), title = ttlfun('Number of taxa', input$rawsel2), width = 12)),
+      renderUI(shinydashboard::box(gaugeOutput('bentgauge'), title = ttlfun('Benthic taxa', input$rawsel2), width = 12)),
+      renderUI(shinydashboard::box(gaugeOutput('seltgauge'), title = ttlfun('selected taxa', input$rawsel2), width = 12)),
+      renderUI(shinydashboard::box(gaugeOutput('guilgauge'), title = ttlfun('Number of guilds', input$rawsel2), width = 12)),
+      renderUI(shinydashboard::box(gaugeOutput('shangauge'), title = ttlfun('Shannon diversity', input$rawsel2), width = 12))
     )
-    ),
+  ),
   h4(renderText(paste0('Site percentiles compared to all sites from ', paste(input$yrsel2, collapse = ' to ')))), 
   fillRow(
-    gaugeOutput('numtqgauge'),
-    gaugeOutput('bentqgauge'),
-    gaugeOutput('seltqgauge'),
-    gaugeOutput('guilqgauge'),
-    gaugeOutput('shanqgauge')
+    shinydashboard::box(gaugeOutput('numtqgauge'), title = HTML('<h5>Number of taxa</h5>'), width = 12),
+    shinydashboard::box(gaugeOutput('bentqgauge'), title = HTML('<h5>Benthic taxa</h5>'), width = 12),
+    shinydashboard::box(gaugeOutput('seltqgauge'), title = HTML('<h5>Selected taxa</h5>'), width = 12),
+    shinydashboard::box(gaugeOutput('guilqgauge'), title = HTML('<h5>Number of guilds</h5>'), width = 12),
+    shinydashboard::box(gaugeOutput('shanqgauge'), title = HTML('<h5>Shannon diversity</h5>'), width = 12)
   )
 )
 ```
