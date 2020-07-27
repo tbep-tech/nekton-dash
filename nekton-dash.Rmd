@@ -571,9 +571,21 @@ Citation info here: [![DOI](https://zenodo.org/badge/276705811.svg)](https://zen
 
 #### How to understand and use the TBNI
 
-The TBNI is a multimetric assessment method that quantifies the ecological health of the nekton community (fish and selected invertebrates) in Tampa Bay. The TBNI uses catch data from the Florida Fish and Wildlife Conservation Commission (FWC) Fish and Wildlife Research Institute’s (FWRI) Fisheries-Independent Monitoring (FIM) program (data available [here](https://geodata.myfwc.com/datasets/68fb6774b58a40a08a6f87959aaa53c4_26/data)). The FIM program uses multiple gear types to sample inshore fish populations in Tampa Bay and other estuaries in the state. The TBNI uses catch data from the 21.3-m bag that has the longest, most consistent sampling record. This gampling gear is ideal for collecting fish in near shore areas, generally as early recruits, juveniles, and smaller-bodied nekton. All fish and selected invertebrates are identified to the lowest possible taxon (usually species), counted, and a subset are measured. Current protocols were established in 1998 and TBNI estimates are unavailable prior to this date.
+The TBNI is a multimetric assessment method that quantifies the ecological health of the nekton community (fish and selected invertebrates) in Tampa Bay. The TBNI uses catch data from the Florida Fish and Wildlife Conservation Commission (FWC) Fish and Wildlife Research Institute’s (FWRI) Fisheries-Independent Monitoring (FIM) program (data available [here](https://geodata.myfwc.com/datasets/68fb6774b58a40a08a6f87959aaa53c4_26/data)). The FIM program uses multiple gear types to sample inshore fish populations in Tampa Bay and other estuaries in the state. The TBNI uses catch data from the 21.3-m bag that has the longest, most consistent sampling record. This gampling gear is ideal for collecting fish in near shore areas, generally as early recruits, juveniles, and smaller-bodied nekton. 
 
-Five nekton metrics are estimated from the FIM data. These metrics are sensitive to stressor gradients and provide unique information about Nekton community response to environmental conditions in Tampa Bay. The TBNI metrics include: 
+<br>
+```{r, fig.align='center', out.width='70%', fig.cap = 'Deploying the 21.3-m bag seine to capture fish and selected invertebrates in the nearshore area.  Photos courtesy of M. Schrandt.'}
+knitr::include_graphics('www/seine.jpg')
+```
+<br>
+
+<br>
+```{r, fig.align='center', out.width='100%', fig.cap = 'Common species collected in nearshore areas of Tampa Bay that are used in the TBNI.  From left to right, top to bottom: *Achirus lineatus*, *Archosargus probatocephalus*, *Bairdiella chrysoura*, *Callinectes sapidus*, *Cynoscion nebulosus*, *Eucinostomus harengulus*, *Lagodon rhomboides*, *Lutjanus griseus*, *Microgobius gulosus*, *Sciaenops ocellatus*, *Sphoeroides nephelus*, *Trinectes maculatus*.  Photos courtesy of M. Schrandt.'}
+knitr::include_graphics('www/fish.jpg')
+```
+<br>
+
+All fish and selected invertebrates captured in the seine are identified to the lowest possible taxon (usually species), counted, and a subset are measured. Current protocols were established in 1998 and TBNI estimates are unavailable prior to this date. Five nekton metrics are estimated from the FIM data. These metrics are sensitive to stressor gradients and provide unique information about Nekton community response to environmental conditions in Tampa Bay. The TBNI metrics include: 
 
 *	*__NumTaxa__*: Species richness
 *	*__BenthicTaxa__*: Species richness for benthic taxa
