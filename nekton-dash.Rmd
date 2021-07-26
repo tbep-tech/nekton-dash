@@ -45,7 +45,7 @@ source('R/funcs.R')
 data(tbniscr)
 
 fml <- 'Lato Light'
-maxyr <- 2019
+maxyr <- 2020
 perc <- c(32, 46)
 cols <- c('red', 'yellow', 'green')
 
