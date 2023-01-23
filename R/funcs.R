@@ -5,7 +5,7 @@ gaugefun <- function(fimplo, tbniscr, cols, colnm, ttl, raw = FALSE){
 
   if(!raw){
     
-    out <- gauge(scrmet, min = 0, max = 10, label = '', gaugeSectors(
+    out <- flexdashboard::gauge(scrmet, min = 0, max = 10, label = '', flexdashboard::gaugeSectors(
       danger = c(0, 3), warning = c(3, 7), success = c(7, 10),
       colors = rev(cols)
     ))
@@ -25,7 +25,7 @@ gaugefun <- function(fimplo, tbniscr, cols, colnm, ttl, raw = FALSE){
 
     qnts <- quantile(tbniscr[, colnm, drop = T], c(0, 0.95), na.rm = T) %>% round(1) %>%  as.numeric
     
-    out <- gauge(round(fimplo[, colnm, drop = T], 1), min = qnts[1], max = qnts[2],label = '', gaugeSectors(colors = col))
+    out <- flexdashboard::gauge(round(fimplo[, colnm, drop = T], 1), min = qnts[1], max = qnts[2],label = '', flexdashboard::gaugeSectors(colors = col))
     
   }
   
@@ -43,7 +43,7 @@ gaugeqfun <- function(fimplo, fimyrs, colnm, ttl){
   ptile <- ecdf(fimyrs[, colnm, drop = T])(scrmet)
   ptile <- round(100 * ptile, 0)
   
-  out <- gauge(ptile, min = 0, max = 100, label = '', gaugeSectors(
+  out <- flexdashboard::gauge(ptile, min = 0, max = 100, label = '', flexdashboard::gaugeSectors(
     danger = c(0, 33), warning = c(33, 66), success = c(66, 100),
     colors = c("#312271", "#A79FE1", "#F9F9F9")
     ), symbol = '%')

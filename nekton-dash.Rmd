@@ -22,19 +22,10 @@ css: styles.css
 ```{r setup, include=F}
 knitr::opts_chunk$set(echo = F, message = F, warning = F)
 
-library(flexdashboard)
-library(tidyverse)
-library(tbeptools)
-# devtools::load_all('../tbeptools')
-library(mapedit)
-library(mapview)
+library(dplyr)
 library(leaflet.extras)
-library(sf)
-library(reactable)
 library(shinydashboard)
-library(plotly)
 library(shinyWidgets)
-library(extrafont)
 
 # # style file
 # styles <- readLines('https://raw.githubusercontent.com/tbep-tech/css-styling/master/styles.css')
@@ -42,6 +33,8 @@ library(extrafont)
 
 source('R/funcs.R')
 
+data('fimstations', package = 'tbeptools')
+data('tbseg', package = 'tbeptools')
 data(tbniscr)
 
 fml <- 'Lato Light'
@@ -50,10 +43,10 @@ perc <- c(32, 46)
 cols <- c('#CC3231', '#E9C318', '#2DC938')
 
 # for shiny server
-st_crs(fimstations) <- 4326
+sf::st_crs(fimstations) <- 4326
 
 # base matrix
-tbnimat <- show_tbnimatrix(tbniscr, family = fml, txtsz = NULL) 
+tbnimat <- tbeptools::show_tbnimatrix(tbniscr, family = fml, txtsz = NULL) 
 
 # fimstations filtered by bay segments
 fimstations <- fimstations[tbseg, ]
@@ -61,10 +54,10 @@ fimstations <- fimstations[tbseg, ]
 # annually averaged data
 tbniyrs <- tbniscr %>%
   select(Reference, Year, TBNI_Score, matches('Score')) %>% 
-  gather('var', 'val', -Reference, -Year) %>% 
+  tidyr::gather('var', 'val', -Reference, -Year) %>% 
   group_by(Reference, Year, var) %>% 
   summarise(val = mean(val, na.rm = T)) %>% 
-  spread(var, val) %>% 
+  tidyr::spread(var, val) %>% 
   ungroup %>% 
   mutate(
     Action = findInterval(TBNI_Score, perc),
@@ -84,7 +77,7 @@ tbnistations <- fimstations %>%
     Action = factor(Action, levels = c('0', '1', '2'), labels = c('On Alert', 'Caution', 'Stay the Course'))
   )
 
-avedat <- anlz_tbniave(tbniscr) 
+avedat <- tbeptools::anlz_tbniave(tbniscr) 
 ```
 
 ```{r reactives}
@@ -127,11 +120,11 @@ rctseltab <- reactive({
   # input
   seltab <- seltab()
   
-  out <- reactable(seltab,
+  out <- reactable::reactable(seltab,
     columns = list(
-      Reference = colDef(name = 'Site'), 
-      bay_segment = colDef(name = 'Bay segment'), 
-      Action = colDef(style = function(value){
+      Reference = reactable::colDef(name = 'Site'), 
+      bay_segment = reactable::colDef(name = 'Bay segment'), 
+      Action = reactable::colDef(style = function(value){
         
         color <- case_when(
           value == 'On Alert' ~ '#CC3231', 
@@ -143,9 +136,9 @@ rctseltab <- reactive({
         
       })
     ),
-    defaultColDef = colDef(
+    defaultColDef = reactable::colDef(
       footerStyle = list(fontWeight = "bold"),
-      format = colFormat(digits = 0, separators = F),
+      format = reactable::colFormat(digits = 0, separators = F),
       resizable = TRUE
     ),
    filterable = T,
@@ -188,7 +181,7 @@ attmap <- reactive({
     )
 
   # map with custom legends
-  mapview(attyr, fill = F, homebutton = F, popup = NULL, legend = F) %>% 
+  mapview::mapview(attyr, fill = F, homebutton = F, popup = NULL, legend = F) %>% 
     .@map %>% 
     clearMarkers() %>% 
     leafem::removeMouseCoordinates() %>%
@@ -228,12 +221,12 @@ attmat <- reactive({
   
   # base matrix with selected year
   p <- tbnimat +
-    geom_hline(yintercept = yrsel1 - 0.5, lwd = lwid) + 
-    geom_hline(yintercept = yrsel1 + 0.5, lwd = lwid) + 
-    geom_segment(aes(x = 0.5, xend = 0.5, y = yrsel1 - 0.5, yend = yrsel1 + 0.5, lwd = lwid)) +
-    geom_segment(aes(x = 4.5, xend = 4.5, y = yrsel1 - 0.5, yend = yrsel1 + 0.5, lwd = lwid))
+    ggplot2::geom_hline(yintercept = yrsel1 - 0.5, lwd = lwid) + 
+    ggplot2::geom_hline(yintercept = yrsel1 + 0.5, lwd = lwid) + 
+    ggplot2::geom_segment(ggplot2::aes(x = 0.5, xend = 0.5, y = yrsel1 - 0.5, yend = yrsel1 + 0.5, lwd = lwid)) +
+    ggplot2::geom_segment(ggplot2::aes(x = 4.5, xend = 4.5, y = yrsel1 - 0.5, yend = yrsel1 + 0.5, lwd = lwid))
   
-  out <- show_matrixplotly(p, tooltip = 'Action')
+  out <- tbeptools::show_matrixplotly(p, tooltip = 'Action')
   
   return(out)
 
@@ -246,15 +239,15 @@ timplo <- reactive({
   yrsel1 <- input$yrsel1
 
   # all segments averaged    
-  p1 <- show_tbniscrall(tbniscr, plotly = T) %>% 
-    add_segments(x = yrsel1, xend = yrsel1, y = 0, yend = 100, line = list(color = 'red'), name = yrsel1, showlegend = F)
+  p1 <- tbeptools::show_tbniscrall(tbniscr, plotly = T) %>% 
+    plotly::add_segments(x = yrsel1, xend = yrsel1, y = 0, yend = 100, line = list(color = 'red'), name = yrsel1, showlegend = F)
   
   # separate bay segments
-  p2 <- show_tbniscr(tbniscr, plotly = T) %>% 
-    add_segments(x = yrsel1, xend = yrsel1, y = 0, yend = 100, line = list(color = 'red'), name = yrsel1, showlegend = F)
+  p2 <- tbeptools::show_tbniscr(tbniscr, plotly = T) %>% 
+    plotly::add_segments(x = yrsel1, xend = yrsel1, y = 0, yend = 100, line = list(color = 'red'), name = yrsel1, showlegend = F)
   
-  out <- subplot(p1, p2, nrows = 2, shareX = T, shareY = T, which_layout = 'merge', margin = 0.04) %>% 
-    layout(legend = list(orientation = "h", xanchor = "center", x = 0.5, y = 0.52))
+  out <- plotly::subplot(p1, p2, nrows = 2, shareX = T, shareY = T, which_layout = 'merge', margin = 0.04) %>% 
+    plotly::layout(legend = list(orientation = "h", xanchor = "center", x = 0.5, y = 0.52))
 
   return(out)
   
@@ -308,7 +301,7 @@ tbnigauge <- reactive({
   # input
   fimplo <- fimplo()
 
-  out <- gauge(fimplo$TBNI_Score, min = 0, max = 100, label = 'TBNI score', gaugeSectors(
+  out <- flexdashboard::gauge(fimplo$TBNI_Score, min = 0, max = 100, label = 'TBNI score', flexdashboard::gaugeSectors(
      danger = c(0, perc[1]), warning = perc, success = c(perc[2], 100),
      colors = rev(cols)
     ))
@@ -465,7 +458,7 @@ output$map <- renderLeaflet({
     )
   
   # map with custom legends
-  mapview(fimyrs, fill = F, homebutton = F, popup = NULL, legend = F) %>% 
+  mapview::mapview(fimyrs, fill = F, homebutton = F, popup = NULL, legend = F) %>% 
     .@map %>% 
     leaflet::clearMarkers() %>%
     addCircleMarkers(
@@ -664,7 +657,7 @@ Similar to other reporting indicators for Tampa Bay (e.g., water quality [report
 ### DOWNLOAD DATA
 
 ```{r}
-output$rctseltab <- renderReactable(rctseltab())
+output$rctseltab <- reactable::renderReactable(rctseltab())
 
 fillCol(flex = c(0.1, NA, 1),
   fillRow(
@@ -673,7 +666,7 @@ fillCol(flex = c(0.1, NA, 1),
     materialSwitch(inputId = 'rawsel1', label = 'Raw metric values?')
     ),
   downloadBttn('seldl', 'Download data', style = 'simple', block = T, color = 'success'),
-  reactableOutput('rctseltab')
+  reactable::reactableOutput('rctseltab')
 )
 ```
 
@@ -686,15 +679,15 @@ Column {.tabset .tabset-fade data-width=275}
 ### MATRIX RESULTS
 
 ```{r}
-output$attmat <- renderPlotly(attmat())
-plotlyOutput('attmat')
+output$attmat <- plotly::renderPlotly(attmat())
+plotly::plotlyOutput('attmat')
 ```
 
 ### TIME SERIES PLOTS
 
 ```{r}
-output$timplo <- renderPlotly(timplo())
-plotlyOutput('timplo')
+output$timplo <- plotly::renderPlotly(timplo())
+plotly::plotlyOutput('timplo')
 ```
 
 ### Using this tab
@@ -846,17 +839,17 @@ Column {data-width=500}
 ### GAUGES
 
 ```{r}
-output$tbnigauge <- renderGauge(tbnigauge())
-output$numtgauge <- renderGauge(numtgauge())
-output$bentgauge <- renderGauge(bentgauge())
-output$seltgauge <- renderGauge(seltgauge())
-output$guilgauge <- renderGauge(guilgauge())
-output$shangauge <- renderGauge(shangauge())
-output$numtqgauge <- renderGauge(numtqgauge())
-output$bentqgauge <- renderGauge(bentqgauge())
-output$seltqgauge <- renderGauge(seltqgauge())
-output$guilqgauge <- renderGauge(guilqgauge())
-output$shanqgauge <- renderGauge(shanqgauge())
+output$tbnigauge <- flexdashboard::renderGauge(tbnigauge())
+output$numtgauge <- flexdashboard::renderGauge(numtgauge())
+output$bentgauge <- flexdashboard::renderGauge(bentgauge())
+output$seltgauge <- flexdashboard::renderGauge(seltgauge())
+output$guilgauge <- flexdashboard::renderGauge(guilgauge())
+output$shangauge <- flexdashboard::renderGauge(shangauge())
+output$numtqgauge <- flexdashboard::renderGauge(numtqgauge())
+output$bentqgauge <- flexdashboard::renderGauge(bentqgauge())
+output$seltqgauge <- flexdashboard::renderGauge(seltqgauge())
+output$guilqgauge <- flexdashboard::renderGauge(guilqgauge())
+output$shanqgauge <- flexdashboard::renderGauge(shanqgauge())
 
 fillCol(flex = c(NA, NA, 0.5, NA, 1, NA, 1),
   column(12,
@@ -867,27 +860,27 @@ fillCol(flex = c(NA, NA, 0.5, NA, 1, NA, 1),
   ),
   h4('TBNI total'), 
   # fillRow(
-    gaugeOutput('tbnigauge', width= 400, height = 900),
+    flexdashboard::gaugeOutput('tbnigauge', width= 400, height = 900),
   # ), 
   h4('Metrics'),
   fillCol(
     flex = c(NA, 1),
     materialSwitch(inputId = 'rawsel2', label = 'Show raw metric values?'),  
     fillRow(
-      renderUI(shinydashboard::box(gaugeOutput('numtgauge'), title = ttlfun('Number of taxa', input$rawsel2), width = 12)),
-      renderUI(shinydashboard::box(gaugeOutput('bentgauge'), title = ttlfun('Benthic taxa', input$rawsel2), width = 12)),
-      renderUI(shinydashboard::box(gaugeOutput('seltgauge'), title = ttlfun('Selected taxa', input$rawsel2), width = 12)),
-      renderUI(shinydashboard::box(gaugeOutput('guilgauge'), title = ttlfun('Number of guilds', input$rawsel2), width = 12)),
-      renderUI(shinydashboard::box(gaugeOutput('shangauge'), title = ttlfun('Shannon diversity', input$rawsel2), width = 12))
+      renderUI(shinydashboard::box(flexdashboard::gaugeOutput('numtgauge'), title = ttlfun('Number of taxa', input$rawsel2), width = 12)),
+      renderUI(shinydashboard::box(flexdashboard::gaugeOutput('bentgauge'), title = ttlfun('Benthic taxa', input$rawsel2), width = 12)),
+      renderUI(shinydashboard::box(flexdashboard::gaugeOutput('seltgauge'), title = ttlfun('Selected taxa', input$rawsel2), width = 12)),
+      renderUI(shinydashboard::box(flexdashboard::gaugeOutput('guilgauge'), title = ttlfun('Number of guilds', input$rawsel2), width = 12)),
+      renderUI(shinydashboard::box(flexdashboard::gaugeOutput('shangauge'), title = ttlfun('Shannon diversity', input$rawsel2), width = 12))
     )
   ),
   h4(renderText(paste0('Site percentiles compared to all sites from ', paste(input$yrsel2, collapse = ' to ')))), 
   fillRow(
-    shinydashboard::box(gaugeOutput('numtqgauge'), title = HTML('<h5>Number of taxa</h5>'), width = 12),
-    shinydashboard::box(gaugeOutput('bentqgauge'), title = HTML('<h5>Benthic taxa</h5>'), width = 12),
-    shinydashboard::box(gaugeOutput('seltqgauge'), title = HTML('<h5>Selected taxa</h5>'), width = 12),
-    shinydashboard::box(gaugeOutput('guilqgauge'), title = HTML('<h5>Number of guilds</h5>'), width = 12),
-    shinydashboard::box(gaugeOutput('shanqgauge'), title = HTML('<h5>Shannon diversity</h5>'), width = 12)
+    shinydashboard::box(flexdashboard::gaugeOutput('numtqgauge'), title = HTML('<h5>Number of taxa</h5>'), width = 12),
+    shinydashboard::box(flexdashboard::gaugeOutput('bentqgauge'), title = HTML('<h5>Benthic taxa</h5>'), width = 12),
+    shinydashboard::box(flexdashboard::gaugeOutput('seltqgauge'), title = HTML('<h5>Selected taxa</h5>'), width = 12),
+    shinydashboard::box(flexdashboard::gaugeOutput('guilqgauge'), title = HTML('<h5>Number of guilds</h5>'), width = 12),
+    shinydashboard::box(flexdashboard::gaugeOutput('shanqgauge'), title = HTML('<h5>Shannon diversity</h5>'), width = 12)
   )
 )
 ```
