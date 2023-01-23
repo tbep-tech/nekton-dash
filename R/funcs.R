@@ -17,7 +17,7 @@ gaugefun <- function(fimplo, tbniscr, cols, colnm, ttl, raw = FALSE){
 
     # get color from metric value, assign to raw for continuity
     col <- findInterval(scrmet, c(0, 3, 7, 10), rightmost.closed = T)
-    col <- case_when(
+    col <- dplyr::case_when(
       col %in% c(0, 1) ~ cols[1], 
       col == 2 ~ cols[2], 
       col == 3 ~ cols[3]

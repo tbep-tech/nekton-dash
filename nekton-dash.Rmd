@@ -22,10 +22,11 @@ css: styles.css
 ```{r setup, include=F}
 knitr::opts_chunk$set(echo = F, message = F, warning = F)
 
-library(dplyr)
+box::use(
+  dplyr[`%>%`]
+)
+
 library(leaflet.extras)
-library(shinydashboard)
-library(shinyWidgets)
 
 # # style file
 # styles <- readLines('https://raw.githubusercontent.com/tbep-tech/css-styling/master/styles.css')
@@ -53,13 +54,13 @@ fimstations <- fimstations[tbseg, ]
 
 # annually averaged data
 tbniyrs <- tbniscr %>%
-  select(Reference, Year, TBNI_Score, matches('Score')) %>% 
+  dplyr::select(Reference, Year, TBNI_Score, dplyr::matches('Score')) %>% 
   tidyr::gather('var', 'val', -Reference, -Year) %>% 
-  group_by(Reference, Year, var) %>% 
-  summarise(val = mean(val, na.rm = T)) %>% 
+  dplyr::group_by(Reference, Year, var) %>% 
+  dplyr::summarise(val = mean(val, na.rm = T)) %>% 
   tidyr::spread(var, val) %>% 
-  ungroup %>% 
-  mutate(
+  dplyr::ungroup() %>% 
+  dplyr::mutate(
     Action = findInterval(TBNI_Score, perc),
     outcome = factor(Action, levels = c('0', '1', '2'), labels = c('red', 'yellow', 'green')),
     outcome = as.character(outcome),
@@ -68,9 +69,9 @@ tbniyrs <- tbniscr %>%
 
 # fimstations, clip by segment extents
 tbnistations <- fimstations %>% 
-  left_join(tbniscr, by = 'Reference') %>% 
-  select(Reference, Year, Month, TBNI_Score, NumTaxa, BenthicTaxa, TaxaSelect, NumGuilds, Shannon) %>% 
-  mutate(
+  dplyr::left_join(tbniscr, by = 'Reference') %>% 
+  dplyr::select(Reference, Year, Month, TBNI_Score, NumTaxa, BenthicTaxa, TaxaSelect, NumGuilds, Shannon) %>% 
+  dplyr::mutate(
     Action = findInterval(TBNI_Score, perc),
     outcome = factor(Action, levels = c('0', '1', '2'), labels = c('red', 'yellow', 'green')),
     outcome = as.character(outcome),
@@ -90,19 +91,19 @@ seltab <- reactive({
   rawsel1 <- input$rawsel1
   
   sel <- tbniscr %>% 
-    filter(bay_segment %in% !!dlsegsel) %>% 
-    filter(Year %in% !!dlyrsel)
+    dplyr::filter(bay_segment %in% !!dlsegsel) %>% 
+    dplyr::filter(Year %in% !!dlyrsel)
   
   if(rawsel1)
     sel <- sel %>% 
-      select(-matches('^Score'))
+      dplyr::select(-matches('^Score'))
   
   if(!rawsel1)
     sel <- sel %>% 
-      select(Reference, Year, Month, Season, bay_segment, TBNI_Score, matches('Score'))
+      dplyr::select(Reference, Year, Month, Season, bay_segment, TBNI_Score, dplyr::matches('Score'))
 
   out <- sel %>%   
-    mutate(
+    dplyr::mutate(
       Action = findInterval(TBNI_Score, perc),
       Action = factor(Action, levels = c('0', '1', '2'), labels = c('On Alert', 'Caution', 'Stay the Course')), 
       Action = as.character(Action)
@@ -126,7 +127,7 @@ rctseltab <- reactive({
       bay_segment = reactable::colDef(name = 'Bay segment'), 
       Action = reactable::colDef(style = function(value){
         
-        color <- case_when(
+        color <- dplyr::case_when(
           value == 'On Alert' ~ '#CC3231', 
           value == 'Caution' ~ '#E9C318', #'#FFFF00', 
           value == 'Stay the Course' ~ '#2DC938'#'#00FF0080'
@@ -157,11 +158,11 @@ attmap <- reactive({
 
   # site scores
   toplo <- tbniyrs %>% 
-    filter(Year %in% yrsel1) %>% 
-    select(Reference, TBNI_Score, Action, outcome) %>% 
-    right_join(fimstations, ., by = 'Reference')  %>% 
-    mutate(
-      outcome = case_when(
+    dplyr::filter(Year %in% yrsel1) %>% 
+    dplyr::select(Reference, TBNI_Score, Action, outcome) %>% 
+    dplyr::right_join(fimstations, ., by = 'Reference')  %>% 
+    dplyr::mutate(
+      outcome = dplyr::case_when(
         outcome == 'green' ~ '#2DC938', 
         outcome == 'yellow' ~ '#E9C318', 
         outcome == 'red' ~ '#CC3231'
@@ -170,10 +171,10 @@ attmap <- reactive({
   
   # segment averages
   attyr <- avedat %>% 
-    filter(Year %in% yrsel1) %>% 
-    left_join(tbseg, ., by = 'bay_segment') %>% 
-    mutate(
-      outcome = case_when(
+    dplyr::filter(Year %in% yrsel1) %>% 
+    dplyr::left_join(tbseg, ., by = 'bay_segment') %>% 
+    dplyr::mutate(
+      outcome = dplyr::case_when(
         outcome == 'green' ~ '#2DC938', 
         outcome == 'yellow' ~ '#E9C318', 
         outcome == 'red' ~ '#CC3231'
@@ -183,9 +184,9 @@ attmap <- reactive({
   # map with custom legends
   mapview::mapview(attyr, fill = F, homebutton = F, popup = NULL, legend = F) %>% 
     .@map %>% 
-    clearMarkers() %>% 
+    leaflet::clearMarkers() %>% 
     leafem::removeMouseCoordinates() %>%
-    addPolygons(
+    leaflet::addPolygons(
       data = attyr, 
       stroke = T, 
       color = 'grey', 
@@ -195,7 +196,7 @@ attmap <- reactive({
       fillOpacity = 0.3,
       label = ~paste0(bay_segment, ': ', long_name, ', Action: ', Action)
     ) %>% 
-    addCircleMarkers(
+    leaflet::addCircleMarkers(
       data = toplo, 
       layerId = ~Reference,
       stroke = TRUE,
@@ -207,7 +208,7 @@ attmap <- reactive({
       radius= 4,#~scales::rescale(val, from = scls, to = c(5, 20)),
       label = ~paste0('Site ', Reference, ', TBNI: ', round(TBNI_Score, 1), ', Action: ', Action)
     ) %>% 
-    addLegend("topright", labels = c("Stay the Course", "Caution", "On Alert"), colors = rev(cols), title = "Bay segment/site <br>matrix outcomes", opacity = 1)
+    leaflet::addLegend("topright", labels = c("Stay the Course", "Caution", "On Alert"), colors = rev(cols), title = "Bay segment/site <br>matrix outcomes", opacity = 1)
   
 })
 
@@ -261,7 +262,7 @@ fimyrs <- reactive({
   
   # filter by year to map
   out <- tbnistations %>% 
-    filter(Year >= yrsel2[1] & Year <= yrsel2[2])
+    dplyr::filter(Year >= yrsel2[1] & Year <= yrsel2[2])
   
   return(out)
   
@@ -273,7 +274,7 @@ fimplo <- reactive({
   req(selsit)
   
   out <- tbniscr %>% 
-    filter(Reference %in% selsit)
+    dplyr::filter(Reference %in% selsit)
  
   return(out)
   
@@ -449,8 +450,8 @@ output$map <- renderLeaflet({
   fimyrs <- fimyrs()
 
   fimyrs <- fimyrs %>% 
-    mutate(
-      outcome = case_when(
+    dplyr::mutate(
+      outcome = dplyr::case_when(
         outcome == 'green' ~ '#2DC938', 
         outcome == 'yellow' ~ '#E9C318', 
         outcome == 'red' ~ '#CC3231'
@@ -461,7 +462,7 @@ output$map <- renderLeaflet({
   mapview::mapview(fimyrs, fill = F, homebutton = F, popup = NULL, legend = F) %>% 
     .@map %>% 
     leaflet::clearMarkers() %>%
-    addCircleMarkers(
+    leaflet::addCircleMarkers(
       data = fimyrs, 
       layerId = ~Reference,
       stroke = T,
@@ -477,7 +478,7 @@ output$map <- renderLeaflet({
 })
 
 # leaflet proxy for marker select
-map <- leafletProxy('map')
+map <- leaflet::leafletProxy('map')
 
 # binding for marker select and year
 makeReactiveBinding('selsit')
@@ -493,8 +494,8 @@ observeEvent(input$map_marker_click, {
   fimyrs <- fimyrs()
   
   fimyrs <- fimyrs %>% 
-    mutate(
-      outcome = case_when(
+    dplyr::mutate(
+      outcome = dplyr::case_when(
         outcome == 'green' ~ '#2DC938', 
         outcome == 'yellow' ~ '#E9C318', 
         outcome == 'red' ~ '#CC3231'
@@ -503,12 +504,12 @@ observeEvent(input$map_marker_click, {
   
   # filter the pour points by selection
   selsitplo <- fimyrs %>%
-    filter(Reference %in% selsit) 
+    dplyr::filter(Reference %in% selsit) 
 
   # clear markers on input select, add all points and selected point
   map <- map %>%
     leaflet::clearMarkers() %>%
-    addCircleMarkers(
+    leaflet::addCircleMarkers(
       data = fimyrs,
       layerId = ~Reference,
       stroke = T,
@@ -520,7 +521,7 @@ observeEvent(input$map_marker_click, {
       fillColor = ~outcome,
       label = ~paste0('Site ', Reference, ' (TBNI: ', round(TBNI_Score, 1), ', action: ', Action)
     ) %>%    
-    addCircleMarkers(
+    leaflet::addCircleMarkers(
       data = selsitplo,
       layerId = ~Reference,
       stroke = F,
@@ -663,9 +664,9 @@ fillCol(flex = c(0.1, NA, 1),
   fillRow(
     selectInput('dlyrsel', 'Select years:', choices = unique(tbniscr$Year), selected = maxyr, multiple = T),
     selectInput('dlsegsel', 'Select bay segments:', choices = unique(tbniscr$bay_segment), selected = unique(tbniscr$bay_segment), multiple = T),
-    materialSwitch(inputId = 'rawsel1', label = 'Raw metric values?')
+    shinyWidgets::materialSwitch(inputId = 'rawsel1', label = 'Raw metric values?')
     ),
-  downloadBttn('seldl', 'Download data', style = 'simple', block = T, color = 'success'),
+  shinyWidgets::downloadBttn('seldl', 'Download data', style = 'simple', block = T, color = 'success'),
   reactable::reactableOutput('rctseltab')
 )
 ```
@@ -744,14 +745,14 @@ Column {data-width=500}
 ### RESULTS BY YEAR
 
 ```{r}
-output$attmap <- renderLeaflet({attmap()})
+output$attmap <- leaflet::renderLeaflet({attmap()})
 fillCol(flex = c(NA, 1),
   column(12,
     column(6,
       sliderInput('yrsel1', 'Select year:', min = 1998, max = maxyr, value = maxyr, step = 1, sep = '', width = '200%', animate = T),
     )
   ),
-  leafletOutput('attmap')
+  leaflet::leafletOutput('attmap')
 )
 ```
 
@@ -764,7 +765,7 @@ Column {.tabset .tabset-fade data-width=275}
 ### MAP SELECTION
 
 ```{r}
-leafletOutput('map')
+leaflet::leafletOutput('map')
 ```
 
 ### Using this tab
@@ -865,7 +866,7 @@ fillCol(flex = c(NA, NA, 0.5, NA, 1, NA, 1),
   h4('Metrics'),
   fillCol(
     flex = c(NA, 1),
-    materialSwitch(inputId = 'rawsel2', label = 'Show raw metric values?'),  
+    shinyWidgets::materialSwitch(inputId = 'rawsel2', label = 'Show raw metric values?'),  
     fillRow(
       renderUI(shinydashboard::box(flexdashboard::gaugeOutput('numtgauge'), title = ttlfun('Number of taxa', input$rawsel2), width = 12)),
       renderUI(shinydashboard::box(flexdashboard::gaugeOutput('bentgauge'), title = ttlfun('Benthic taxa', input$rawsel2), width = 12)),
