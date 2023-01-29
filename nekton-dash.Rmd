@@ -315,150 +315,150 @@ fimtxt <- reactive({
   
 })
 
-# tbni gauge
-tbnigauge <- reactive({
-  
-  # input
-  fimplo <- fimplo()
-
-  out <- flexdashboard::gauge(fimplo$TBNI_Score, min = 0, max = 100, label = 'TBNI score', flexdashboard::gaugeSectors(
-     danger = c(0, perc[1]), warning = perc, success = c(perc[2], 100),
-     colors = rev(cols)
-    ))
-  
-  return(out)
-  
-})
-
-# number of taxa gauge
-numtgauge <- reactive({
-  
-  # input
-  fimplo <- fimplo()
-  rawsel2 <- input$rawsel2
-  
-  out <- gaugefun(fimplo, tbniscr, cols, 'NumTaxa', 'Number of Taxa', raw = rawsel2)
-  
-  return(out)
-  
-})
-
-# number of benthic taxa gauge
-bentgauge <- reactive({
-  
-  # input
-  fimplo <- fimplo()
-  rawsel2 <- input$rawsel2
-  
-  out <- gaugefun(fimplo, tbniscr, cols, 'BenthicTaxa', 'Benthic Taxa', raw = rawsel2)
-
-  return(out)
-  
-})
-
-# selected taxa gauge
-seltgauge <- reactive({
-  
-  # input
-  fimplo <- fimplo()
-  rawsel2 <- input$rawsel2
-
-  out <- gaugefun(fimplo, tbniscr, cols, 'TaxaSelect', 'Selected Taxa', raw = rawsel2)
-
-  return(out)
-  
-})
-
-# number of guilds gauge
-guilgauge <- reactive({
-  
-  # input
-  fimplo <- fimplo()
-  rawsel2 <- input$rawsel2
-  
-  out <- gaugefun(fimplo, tbniscr, cols, 'NumGuilds', 'Number of Guilds', raw = rawsel2)
-  
-  return(out)
-  
-})
-
-# shannon diversity gauge
-shangauge <- reactive({
-  
-  # input
-  fimplo <- fimplo()
-  rawsel2 <- input$rawsel2
-  
-  out <- gaugefun(fimplo, tbniscr, cols, 'Shannon', 'Shannon diversity', rawsel2)
-  
-  return(out)
-  
-})
-
-# number of taxa gauge, percentile
-numtqgauge <- reactive({
-  
-  # input
-  fimplo <- fimplo()
-  fimyrs <- fimyrs()
-  
-  out <- gaugeqfun(fimplo, fimyrs, 'NumTaxa', 'Number of Taxa')
-  
-  return(out)
-  
-})
-
-# number of benthic taxa gauge, percentile
-bentqgauge <- reactive({
-  
-  # input
-  fimplo <- fimplo()
-  fimyrs <- fimyrs()
-  
-  out <- gaugeqfun(fimplo, fimyrs, 'BenthicTaxa', 'Benthic Taxa')
-
-  return(out)
-  
-})
-
-# selected taxa gauge, percentile
-seltqgauge <- reactive({
-  
-  # input
-  fimplo <- fimplo()
-  fimyrs <- fimyrs()
-
-  out <- gaugeqfun(fimplo, fimyrs, 'TaxaSelect', 'Selected Taxa')
-
-  return(out)
-  
-})
-
-# number of guilds gauge, percentile
-guilqgauge <- reactive({
-  
-  # input
-  fimplo <- fimplo()
-  fimyrs <- fimyrs()
-  
-  out <- gaugeqfun(fimplo, fimyrs, 'NumGuilds', 'Number of Guilds')
-  
-  return(out)
-  
-})
-
-# shannon diversity gauge, percentile
-shanqgauge <- reactive({
-  
-  # input
-  fimplo <- fimplo()
-  fimyrs <- fimyrs()
-  
-  out <- gaugeqfun(fimplo, fimyrs, 'Shannon', 'Shannon diversity')
-  
-  return(out)
-  
-})
+# # tbni gauge
+# tbnigauge <- reactive({
+#   
+#   # input
+#   fimplo <- fimplo()
+# 
+#   out <- flexdashboard::gauge(fimplo$TBNI_Score, min = 0, max = 100, label = 'TBNI score', flexdashboard::gaugeSectors(
+#      danger = c(0, perc[1]), warning = perc, success = c(perc[2], 100),
+#      colors = rev(cols)
+#     ))
+#   
+#   return(out)
+#   
+# })
+# 
+# # number of taxa gauge
+# numtgauge <- reactive({
+#   
+#   # input
+#   fimplo <- fimplo()
+#   rawsel2 <- input$rawsel2
+#   
+#   out <- gaugefun(fimplo, tbniscr, cols, 'NumTaxa', 'Number of Taxa', raw = rawsel2)
+#   
+#   return(out)
+#   
+# })
+# 
+# # number of benthic taxa gauge
+# bentgauge <- reactive({
+#   
+#   # input
+#   fimplo <- fimplo()
+#   rawsel2 <- input$rawsel2
+#   
+#   out <- gaugefun(fimplo, tbniscr, cols, 'BenthicTaxa', 'Benthic Taxa', raw = rawsel2)
+# 
+#   return(out)
+#   
+# })
+# 
+# # selected taxa gauge
+# seltgauge <- reactive({
+#   
+#   # input
+#   fimplo <- fimplo()
+#   rawsel2 <- input$rawsel2
+# 
+#   out <- gaugefun(fimplo, tbniscr, cols, 'TaxaSelect', 'Selected Taxa', raw = rawsel2)
+# 
+#   return(out)
+#   
+# })
+# 
+# # number of guilds gauge
+# guilgauge <- reactive({
+#   
+#   # input
+#   fimplo <- fimplo()
+#   rawsel2 <- input$rawsel2
+#   
+#   out <- gaugefun(fimplo, tbniscr, cols, 'NumGuilds', 'Number of Guilds', raw = rawsel2)
+#   
+#   return(out)
+#   
+# })
+# 
+# # shannon diversity gauge
+# shangauge <- reactive({
+#   
+#   # input
+#   fimplo <- fimplo()
+#   rawsel2 <- input$rawsel2
+#   
+#   out <- gaugefun(fimplo, tbniscr, cols, 'Shannon', 'Shannon diversity', rawsel2)
+#   
+#   return(out)
+#   
+# })
+# 
+# # number of taxa gauge, percentile
+# numtqgauge <- reactive({
+#   
+#   # input
+#   fimplo <- fimplo()
+#   fimyrs <- fimyrs()
+#   
+#   out <- gaugeqfun(fimplo, fimyrs, 'NumTaxa', 'Number of Taxa')
+#   
+#   return(out)
+#   
+# })
+# 
+# # number of benthic taxa gauge, percentile
+# bentqgauge <- reactive({
+#   
+#   # input
+#   fimplo <- fimplo()
+#   fimyrs <- fimyrs()
+#   
+#   out <- gaugeqfun(fimplo, fimyrs, 'BenthicTaxa', 'Benthic Taxa')
+# 
+#   return(out)
+#   
+# })
+# 
+# # selected taxa gauge, percentile
+# seltqgauge <- reactive({
+#   
+#   # input
+#   fimplo <- fimplo()
+#   fimyrs <- fimyrs()
+# 
+#   out <- gaugeqfun(fimplo, fimyrs, 'TaxaSelect', 'Selected Taxa')
+# 
+#   return(out)
+#   
+# })
+# 
+# # number of guilds gauge, percentile
+# guilqgauge <- reactive({
+#   
+#   # input
+#   fimplo <- fimplo()
+#   fimyrs <- fimyrs()
+#   
+#   out <- gaugeqfun(fimplo, fimyrs, 'NumGuilds', 'Number of Guilds')
+#   
+#   return(out)
+#   
+# })
+# 
+# # shannon diversity gauge, percentile
+# shanqgauge <- reactive({
+#   
+#   # input
+#   fimplo <- fimplo()
+#   fimyrs <- fimyrs()
+#   
+#   out <- gaugeqfun(fimplo, fimyrs, 'Shannon', 'Shannon diversity')
+#   
+#   return(out)
+#   
+# })
 ```
 
 ```{r map}
@@ -881,17 +881,17 @@ Column {data-width=500}
 ### GAUGES
 
 ```{r}
-output$tbnigauge <- flexdashboard::renderGauge(tbnigauge())
-output$numtgauge <- flexdashboard::renderGauge(numtgauge())
-output$bentgauge <- flexdashboard::renderGauge(bentgauge())
-output$seltgauge <- flexdashboard::renderGauge(seltgauge())
-output$guilgauge <- flexdashboard::renderGauge(guilgauge())
-output$shangauge <- flexdashboard::renderGauge(shangauge())
-output$numtqgauge <- flexdashboard::renderGauge(numtqgauge())
-output$bentqgauge <- flexdashboard::renderGauge(bentqgauge())
-output$seltqgauge <- flexdashboard::renderGauge(seltqgauge())
-output$guilqgauge <- flexdashboard::renderGauge(guilqgauge())
-output$shanqgauge <- flexdashboard::renderGauge(shanqgauge())
+# output$tbnigauge <- flexdashboard::renderGauge(tbnigauge())
+# output$numtgauge <- flexdashboard::renderGauge(numtgauge())
+# output$bentgauge <- flexdashboard::renderGauge(bentgauge())
+# output$seltgauge <- flexdashboard::renderGauge(seltgauge())
+# output$guilgauge <- flexdashboard::renderGauge(guilgauge())
+# output$shangauge <- flexdashboard::renderGauge(shangauge())
+# output$numtqgauge <- flexdashboard::renderGauge(numtqgauge())
+# output$bentqgauge <- flexdashboard::renderGauge(bentqgauge())
+# output$seltqgauge <- flexdashboard::renderGauge(seltqgauge())
+# output$guilqgauge <- flexdashboard::renderGauge(guilqgauge())
+# output$shanqgauge <- flexdashboard::renderGauge(shanqgauge())
 
 fillCol(flex = c(NA, NA, 0.5, NA, 1, NA, 1),
   column(12,
@@ -904,26 +904,26 @@ fillCol(flex = c(NA, NA, 0.5, NA, 1, NA, 1),
   # fillRow(
     flexdashboard::gaugeOutput('tbnigauge', width= 400, height = 900),
   # ), 
-  h4('Metrics'),
-  fillCol(
-    flex = c(NA, 1),
-    shinyWidgets::materialSwitch(inputId = 'rawsel2', label = 'Show raw metric values?'),  
-    fillRow(
-      renderUI(shinydashboard::box(flexdashboard::gaugeOutput('numtgauge'), title = ttlfun('Number of taxa', input$rawsel2), width = 12)),
-      renderUI(shinydashboard::box(flexdashboard::gaugeOutput('bentgauge'), title = ttlfun('Benthic taxa', input$rawsel2), width = 12)),
-      renderUI(shinydashboard::box(flexdashboard::gaugeOutput('seltgauge'), title = ttlfun('Selected taxa', input$rawsel2), width = 12)),
-      renderUI(shinydashboard::box(flexdashboard::gaugeOutput('guilgauge'), title = ttlfun('Number of guilds', input$rawsel2), width = 12)),
-      renderUI(shinydashboard::box(flexdashboard::gaugeOutput('shangauge'), title = ttlfun('Shannon diversity', input$rawsel2), width = 12))
-    )
-  ),
-  h4(renderText(paste0('Site percentiles compared to all sites from ', paste(input$yrsel2, collapse = ' to ')))), 
-  fillRow(
-    shinydashboard::box(flexdashboard::gaugeOutput('numtqgauge'), title = HTML('<h5>Number of taxa</h5>'), width = 12),
-    shinydashboard::box(flexdashboard::gaugeOutput('bentqgauge'), title = HTML('<h5>Benthic taxa</h5>'), width = 12),
-    shinydashboard::box(flexdashboard::gaugeOutput('seltqgauge'), title = HTML('<h5>Selected taxa</h5>'), width = 12),
-    shinydashboard::box(flexdashboard::gaugeOutput('guilqgauge'), title = HTML('<h5>Number of guilds</h5>'), width = 12),
-    shinydashboard::box(flexdashboard::gaugeOutput('shanqgauge'), title = HTML('<h5>Shannon diversity</h5>'), width = 12)
-  )
+  h4('Metrics')#,
+  # fillCol(
+  #   flex = c(NA, 1),
+  #   shinyWidgets::materialSwitch(inputId = 'rawsel2', label = 'Show raw metric values?'),  
+  #   fillRow(
+  #     renderUI(shinydashboard::box(flexdashboard::gaugeOutput('numtgauge'), title = ttlfun('Number of taxa', input$rawsel2), width = 12)),
+  #     renderUI(shinydashboard::box(flexdashboard::gaugeOutput('bentgauge'), title = ttlfun('Benthic taxa', input$rawsel2), width = 12)),
+  #     renderUI(shinydashboard::box(flexdashboard::gaugeOutput('seltgauge'), title = ttlfun('Selected taxa', input$rawsel2), width = 12)),
+  #     renderUI(shinydashboard::box(flexdashboard::gaugeOutput('guilgauge'), title = ttlfun('Number of guilds', input$rawsel2), width = 12)),
+  #     renderUI(shinydashboard::box(flexdashboard::gaugeOutput('shangauge'), title = ttlfun('Shannon diversity', input$rawsel2), width = 12))
+  #   )
+  # ),
+  # h4(renderText(paste0('Site percentiles compared to all sites from ', paste(input$yrsel2, collapse = ' to ')))), 
+  # fillRow(
+  #   shinydashboard::box(flexdashboard::gaugeOutput('numtqgauge'), title = HTML('<h5>Number of taxa</h5>'), width = 12),
+  #   shinydashboard::box(flexdashboard::gaugeOutput('bentqgauge'), title = HTML('<h5>Benthic taxa</h5>'), width = 12),
+  #   shinydashboard::box(flexdashboard::gaugeOutput('seltqgauge'), title = HTML('<h5>Selected taxa</h5>'), width = 12),
+  #   shinydashboard::box(flexdashboard::gaugeOutput('guilqgauge'), title = HTML('<h5>Number of guilds</h5>'), width = 12),
+  #   shinydashboard::box(flexdashboard::gaugeOutput('shanqgauge'), title = HTML('<h5>Shannon diversity</h5>'), width = 12)
+  # )
 )
 ```
 
