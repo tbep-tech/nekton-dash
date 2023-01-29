@@ -26,8 +26,6 @@ box::use(
   dplyr[`%>%`]
 )
 
-library(leaflet.extras)
-
 # # style file
 # styles <- readLines('https://raw.githubusercontent.com/tbep-tech/css-styling/master/styles.css')
 # writeLines(styles, 'styles.css')
@@ -465,7 +463,7 @@ shanqgauge <- reactive({
 
 ```{r map}
 # site selection map
-output$map <- renderLeaflet({
+output$map <- leaflet::renderLeaflet({
   
   # input
   fimyrs <- fimyrs()
