@@ -684,11 +684,11 @@ knitr::include_graphics('www/hitbni.png')
 
 TBNI scores can be translated into actionable management categories with narrative interpretations.  For example, scores above the median TBNI for the dataset used to develop the TBNI indicate a healthy nekton community with a management category of "Stay the Course".  Scores between the 33rd percentile and median are in the "Caution" category and scores below the 33rd percentile are in the "On Alert" category. Each action category has a narrative description to provide guidance to managers:
 
-<span style="color:#2DC938; text-shadow: 0 0 3px #333;">__Stay the Course__</span>: Continue planned projects. Report data via annual progress reports. 
+<span style="color:#2DC938">__Stay the Course__</span>: Continue planned projects. Report data via annual progress reports. 
 
-<span style="color:#E9C318; text-shadow: 0 0 3px #333;">__Caution__</span>: Review monitoring data and identify additional research/monitoring needs. Begin/continue TAC and Management Board development of specific management recommendations.
+<span style="color:#E9C318">__Caution__</span>: Review monitoring data and identify additional research/monitoring needs. Begin/continue TAC and Management Board development of specific management recommendations.
 
-<span style="color:#CC3231; text-shadow: 0 0 3px #333;">__On Alert__</span>: Finalize development and implement appropriate management actions to get nekton community back on track.
+<span style="color:#CC3231">__On Alert__</span>: Finalize development and implement appropriate management actions to get nekton community back on track.
  
 Similar to other reporting indicators for Tampa Bay (e.g., water quality [report card](https://tbeptech.org/TBEP_TECH_PUBS/2020/TBEP_01_20_2019_Decision_Matrix_Update.pdf)), the action categories can be tracked on an annual basis to inform regional planning activities. This dashboard provides a suite of tools to assess historical and current trends in TBNI scores and the supporting metrics.
 
@@ -736,11 +736,11 @@ plotly::plotlyOutput('timplo')
 
 This tab shows the overall assessment of the TBNI as management action categories:
 
-<span style="color:#2DC938; text-shadow: 0 0 3px #333;">__Stay the Course__</span>: Continue planned projects. Report data via annual progress reports. 
+<span style="color:#2DC938">__Stay the Course__</span>: Continue planned projects. Report data via annual progress reports. 
 
-<span style="color:#E9C318; text-shadow: 0 0 3px #333;">__Caution__</span>: Review monitoring data and identify additional research/monitoring needs. Begin/continue TAC and Management Board development of specific management recommendations.
+<span style="color:#E9C318">__Caution__</span>: Review monitoring data and identify additional research/monitoring needs. Begin/continue TAC and Management Board development of specific management recommendations.
 
-<span style="color:#CC3231; text-shadow: 0 0 3px #333;">__On Alert__</span>: Finalize development and implement appropriate management actions to get nekton community back on track.
+<span style="color:#CC3231">__On Alert__</span>: Finalize development and implement appropriate management actions to get nekton community back on track.
 
 The action categories are based on annual averages of scores at all locations where fish were sampled within each of four major segments in Tampa Bay (__OTB__: Old Tampa Bay, __HB__: Hillsborough Bay, __MTB__: Middle Tampa Bay, __LTB__: Lower Tampa Bay).  The results can be viewed in the *MATRIX RESULTS* tab. Hovering the mouse pointer over each cell shows the category assigned to each bay segment in each year.   
 
@@ -750,7 +750,7 @@ knitr::include_graphics('www/attainex.PNG')
 ```
 <br>
 
-In the above example, the action category for Hillsborough Bay in 2001 was <span style="color:#E9C318; text-shadow: 0 0 3px #333;">Caution</span>.  
+In the above example, the action category for Hillsborough Bay in 2001 was <span style="color:#E9C318">Caution</span>.  
 
 The categories assigned to each bay segment are based on the ranges of values observed for the TBNI in Tampa Bay.  The *TIME SERIES PLOTS* tab shows the breakpoints used for each of the three categories.  Additionally, two plots on the tab show trends over time for the average of all scores and bay segments (top plot) and separately by each bay segment (bottom).   
 
@@ -776,7 +776,7 @@ knitr::include_graphics('www/mapex.PNG')
 ```
 <br>
 
-The above example shows results for site TBM2019091504, which was assigned an action category of <span style="color:#2DC938; text-shadow: 0 0 3px #333;">__Stay the Course__</span> based on a TBNI score of 64.  
+The above example shows results for site TBM2019091504, which was assigned an action category of <span style="color:#2DC938">__Stay the Course__</span> based on a TBNI score of 64.  
 
 Finally, the year slider on the top can be used to select which year is shown on the map. A reference box on the *MATRIX RESULTS* tab and a reference line on the *TIME SERIES PLOTS* shows which year is selected. Selecting the play button will cycle through all years in the data, with the maps and plots updating with each year. 
 
