@@ -23,7 +23,8 @@ gaugefun <- function(fimplo, tbniscr, cols, colnm, ttl, raw = FALSE){
       col == 3 ~ cols[3]
     )
 
-    qnts <- quantile(tbniscr[, colnm, drop = T], c(0, 0.95), na.rm = T) %>% round(1) %>%  as.numeric
+    qnts <- quantile(tbniscr[, colnm, drop = T], c(0, 0.95), na.rm = T) 
+    qnts <- as.numeric(round(qnts, 1))
     
     out <- flexdashboard::gauge(round(fimplo[, colnm, drop = T], 1), min = qnts[1], max = qnts[2],label = '', flexdashboard::gaugeSectors(colors = col))
     

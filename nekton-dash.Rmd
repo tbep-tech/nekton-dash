@@ -479,7 +479,7 @@ output$map <- leaflet::renderLeaflet({
     )
   
   # map with custom legends
-  out <- mapview::mapview(fimyrs, fill = F, homebutton = F, popup = NULL, legend = F) %>% 
+  out <- mapview::mapview(fimyrs, homebutton = F, popup = NULL, legend = F) %>% 
     .@map %>% 
     leaflet::clearMarkers() %>%
     leaflet::addCircleMarkers(
