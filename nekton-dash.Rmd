@@ -37,7 +37,7 @@ data('tbseg', package = 'tbeptools')
 data(tbniscr)
 
 fml <- 'Lato Light'
-maxyr <- 2022
+maxyr <- 2023
 perc <- c(32, 46)
 cols <- c('#CC3231', '#E9C318', '#2DC938')
 
