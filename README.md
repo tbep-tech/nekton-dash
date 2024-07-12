@@ -12,3 +12,4 @@ Materials for Tampa Bay Nekton Index Dashboard, [link](http://shiny.tbep.org/nek
 1. Docker image will neeed to be recreated with tbeptools update (once on R-Universe), but can install in the image directly on the server. Pull new image to server when done and restart instance. 
 1. Update nekton Rmd in State of the Bay repo
 1. Update CCMP FW-5 page using `quarto publish gh-pages` in CMD line. Site builds automatically with GH-Actions, but it required a push to trigger.
+1. Update data viz page on TBEP website with matrix and ts plots
