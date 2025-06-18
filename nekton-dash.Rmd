@@ -624,7 +624,7 @@ knitr::include_graphics('www/plotcontrols.PNG')
 
 #### Website information
 
-Technical questions about the TBNI can be sent to [Meagan Schrandt](mailto:Meagan.Schrandt@myfwc.com).  Questions and comments about the dashboard can be sent to [Marcus Beck](mailto:mbeck@tbep.org). The page source content can be viewed on [Github](https://github.com/tbep-tech/nekton-dash).  All data were obtained from the Fisheries Independent Monitoring program collected and maintained by the Florida Fish and Wildlife Conservation Commission (accessible [here](https://geodata.myfwc.com/datasets/68fb6774b58a40a08a6f87959aaa53c4_26/data)). Like this app? Share it on social media using the [\#TampaBayOpenSci](https://twitter.com/hashtag/TampaBayOpenSci?src=hashtag_click) hashtag.  
+Questions and comments about the dashboard can be sent to [Marcus Beck](mailto:mbeck@tbep.org). The page source content can be viewed on [Github](https://github.com/tbep-tech/nekton-dash).  All data were obtained from the Fisheries Independent Monitoring program collected and maintained by the Florida Fish and Wildlife Conservation Commission (accessible [here](https://geodata.myfwc.com/datasets/68fb6774b58a40a08a6f87959aaa53c4_26/data)). Like this app? Share it on social media using the [\#TampaBayOpenSci](https://twitter.com/hashtag/TampaBayOpenSci?src=hashtag_click) hashtag.  
 
 Citation info here: [![DOI](https://zenodo.org/badge/276705811.svg)](https://zenodo.org/badge/latestdoi/276705811)
 
