@@ -37,7 +37,7 @@ data('tbseg', package = 'tbeptools')
 data(tbniscr)
 
 fml <- 'Lato Light'
-maxyr <- 2023
+maxyr <- max(tbniscr$Year)
 perc <- c(32, 46)
 cols <- c('#CC3231', '#E9C318', '#2DC938')
 
@@ -167,7 +167,7 @@ attmap <- reactive({
         outcome == 'red' ~ '#CC3231'
       )
     )
-  
+
   # segment averages
   attyr <- avedat %>% 
     dplyr::filter(Year %in% yrsel1) %>% 
@@ -181,8 +181,7 @@ attmap <- reactive({
     )
 
   # map with custom legends
-  out <- mapview::mapview(attyr, fill = F, homebutton = F, popup = NULL, legend = F) %>% 
-    .@map %>% 
+  out <- tbeptools::util_map(attyr, minimap = NULL) %>%
     leaflet::clearMarkers() %>% 
     leafem::removeMouseCoordinates() %>%
     leaflet::addPolygons(
@@ -477,10 +476,9 @@ output$map <- leaflet::renderLeaflet({
         outcome == 'red' ~ '#CC3231'
       )
     )
-  
+
   # map with custom legends
-  out <- mapview::mapview(fimyrs, homebutton = F, popup = NULL, legend = F) %>% 
-    .@map %>% 
+  out <- tbeptools::util_map(fimyrs, minimap = NULL) %>% 
     leaflet::clearMarkers() %>%
     leaflet::addCircleMarkers(
       data = fimyrs, 
@@ -492,7 +490,7 @@ output$map <- leaflet::renderLeaflet({
       weight = 1, 
       radius = 4, 
       fillColor = ~outcome,
-      label = ~paste0('Site ', Reference, ' (TBNI: ', round(TBNI_Score, 1), ', action: ', Action)
+      label = ~paste0('Site ', Reference, ' (TBNI: ', round(TBNI_Score, 1), ', action: ', Action, ')')
     )
     
   if(length(maploc) != 0)
@@ -501,7 +499,6 @@ output$map <- leaflet::renderLeaflet({
 
   return(out)
 
-  
 })
 
 # leaflet proxy for marker select
