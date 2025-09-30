@@ -192,7 +192,8 @@ attmap <- reactive({
       layerId = ~long_name, 
       fillColor = ~outcome, 
       fillOpacity = 0.3,
-      label = ~paste0(bay_segment, ': ', long_name, ', Action: ', Action)
+      label = ~paste0(bay_segment, ': ', long_name, '\nTBNI: ', Segment_TBNI, '\nAction: ', Action), 
+      labelOptions = leaflet::labelOptions(style = list("white-space" = "pre"))
     ) %>% 
     leaflet::addCircleMarkers(
       data = toplo, 
@@ -204,7 +205,8 @@ attmap <- reactive({
       weight = 1,
       fillOpacity = 1,
       radius= 4,#~scales::rescale(val, from = scls, to = c(5, 20)),
-      label = ~paste0('Site ', Reference, ', TBNI: ', round(TBNI_Score, 1), ', Action: ', Action)
+      label = ~paste0('Site: ', Reference, '\nTBNI: ', round(TBNI_Score, 1), '\nAction: ', Action),
+      labelOptions = leaflet::labelOptions(style = list("white-space" = "pre"))
     ) %>% 
     leaflet::addLegend("topright", labels = c("Stay the Course", "Caution", "On Alert"), colors = rev(cols), title = "Bay segment/site <br>matrix outcomes", opacity = 1)
   
@@ -492,7 +494,8 @@ output$map <- leaflet::renderLeaflet({
       weight = 1, 
       radius = 4, 
       fillColor = ~outcome,
-      label = ~paste0('Site ', Reference, ' (TBNI: ', round(TBNI_Score, 1), ', action: ', Action, ')')
+      label = ~paste0('Site: ', Reference, '\nTBNI: ', round(TBNI_Score, 1), '\nAction: ', Action),
+      labelOptions = leaflet::labelOptions(style = list("white-space" = "pre"))
     )
     
   if(length(maploc) != 0)
