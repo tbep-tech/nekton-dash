@@ -548,7 +548,8 @@ observeEvent(input$map_marker_click, {
       weight = 1, 
       radius = 4, 
       fillColor = ~outcome,
-      label = ~paste0('Site ', Reference, ' (TBNI: ', round(TBNI_Score, 1), ', action: ', Action)
+      label = ~paste0('Site: ', Reference, '\nTBNI: ', round(TBNI_Score, 1), '\nAction: ', Action),
+      labelOptions = leaflet::labelOptions(style = list("white-space" = "pre"))
     ) %>%    
     leaflet::addCircleMarkers(
       data = selsitplo,
