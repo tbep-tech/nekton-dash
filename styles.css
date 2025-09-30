@@ -154,6 +154,10 @@ h6 {
   background: #00806E!important; 
 }
 
+.js-irs-0 .irs-grid-pol.small {
+  display: none !important;
+}
+
 /* tabset top border */
 
 .nav-tabs-custom > .nav-tabs > li.active {
