@@ -41,14 +41,14 @@ maxyr <- max(tbniscr$Year)
 perc <- c(32, 46)
 cols <- c('#CC3231', '#E9C318', '#2DC938')
 
+mos <- as.list(1:12)
+names(mos) <- month.abb
+
 # for shiny server
 sf::st_crs(fimstations) <- 4326
 
 # base matrix
 tbnimat <- tbeptools::show_tbnimatrix(tbniscr, family = fml, txtsz = NULL) 
-
-# fimstations filtered by bay segments
-fimstations <- fimstations[tbseg, ]
 
 # annually averaged data
 tbniyrs <- tbniscr %>%
@@ -277,10 +277,12 @@ fimyrs <- reactive({
   
   # input
   yrsel2 <- input$yrsel2
+  mosel2 <- input$mosel2
   
   # filter by year to map
   out <- tbnistations %>% 
-    dplyr::filter(Year >= yrsel2[1] & Year <= yrsel2[2])
+    dplyr::filter(Year >= yrsel2[1] & Year <= yrsel2[2]) %>%
+    dplyr::filter(Month >= mos[[mosel2[1]]] & Month <= mos[[mosel2[[2]]]])
   
   return(out)
   
@@ -892,10 +894,13 @@ output$shanqgauge <- flexdashboard::renderGauge(shanqgauge())
 
 fillCol(flex = c(NA, NA, 0.5, NA, 1, NA, 1),
   column(12,
-    column(6,
-      sliderInput('yrsel2', 'Select year range on map:', min = 1998, max = maxyr, value = c(1998, maxyr), step = 1, sep = '', width = '200%')
+    column(4,
+      sliderInput('yrsel2', 'Select year range on map:', min = 1998, max = maxyr, value = c(1998, maxyr), step = 1, sep = '', width = '100%')
     ), 
-    column(6, renderUI(fimtxt()))
+    column(4, 
+      shinyWidgets::sliderTextInput('mosel2', 'Select month range on map:', choices = names(mos), selected = c('Jan', 'Dec'), force_edges = T, grid = T, width = '100%')
+    ),
+    column(3, renderUI(fimtxt()))
   ),
   h4('TBNI total'), 
   # fillRow(
